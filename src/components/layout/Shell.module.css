@@ -16,12 +16,22 @@
   border-bottom: 1px solid var(--rule);
 }
 
+.headerLeft {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+}
+
 .brand {
   font-size: 18px;
   font-weight: 600;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
-.gear {
+.iconBtn {
   background: none;
   border: 1px solid var(--rule);
   border-radius: 50%;

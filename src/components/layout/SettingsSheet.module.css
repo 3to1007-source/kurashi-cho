@@ -29,6 +29,56 @@
   align-self: center;
 }
 
+.sheetHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.sheetTitle {
+  font-size: 16px;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+}
+
+.backBtn,
+.closeBtn {
+  background: none;
+  border: none;
+  color: var(--ai);
+  font-size: 15px;
+  padding: 8px;
+  min-height: 44px;
+  flex-shrink: 0;
+}
+
+.menuItem {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 3px;
+  background: var(--paper);
+  border: 1px solid var(--rule);
+  border-radius: var(--radius);
+  padding: 14px 16px;
+  text-align: left;
+  min-height: 58px;
+}
+
+.menuItemLabel {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--ink);
+}
+
+.menuItemDesc {
+  font-size: 12px;
+  color: var(--ink-soft);
+  line-height: 1.5;
+}
+
 .section {
   display: flex;
   flex-direction: column;

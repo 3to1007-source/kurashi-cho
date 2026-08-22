@@ -1,8 +1,7 @@
 import { useState } from 'react'
 import { useApp } from '../../context/AppContext'
 import { addUser, exportDataJSON, getBookId } from '../../lib/vault'
-import { todayStr, KAKEI_OUT_CATEGORIES } from '../../lib/constants'
-import { yen } from '../../lib/format'
+import { todayStr } from '../../lib/constants'
 import styles from './SettingsSheet.module.css'
 
 const SYNC_LABEL = {
@@ -23,8 +22,6 @@ export default function SettingsSheet({ onClose }) {
   const [addUserOk, setAddUserOk] = useState(false)
   const [reloadMsg, setReloadMsg] = useState('')
   const [copied, setCopied] = useState(false)
-  const [plannedLabel, setPlannedLabel] = useState('')
-  const [plannedAmount, setPlannedAmount] = useState('')
 
   function addKaizen(e) {
     e.preventDefault()
@@ -91,98 +88,16 @@ export default function SettingsSheet({ onClose }) {
 
   const kaizenSorted = [...data.kaizen].sort((a, b) => (a.at < b.at ? 1 : -1))
 
-  const allowance = data.settings.allowances?.[currentUser] || { monthly: 0, startDay: 1, endDay: 31 }
-
-  function clampDay(v) {
-    return Math.min(31, Math.max(1, Number(v) || 1))
-  }
-
-  function updateAllowance(field, value) {
-    const nextValue = field === 'monthly' ? Number(value) || 0 : clampDay(value)
-    save((prev) => ({
-      ...prev,
-      settings: {
-        ...prev.settings,
-        allowances: {
-          ...prev.settings.allowances,
-          [currentUser]: {
-            ...(prev.settings.allowances?.[currentUser] || { monthly: 0, startDay: 1, endDay: 31 }),
-            [field]: nextValue,
-          },
-        },
-      },
-    }))
-  }
-
-  function updateCategoryBudget(category, value) {
-    const amount = Number(value) || 0
-    save((prev) => ({
-      ...prev,
-      settings: {
-        ...prev.settings,
-        categoryBudgets: { ...prev.settings.categoryBudgets, [category]: amount },
-      },
-    }))
-  }
-
-  const householdCycle = data.settings.householdCycle || { startDay: 1, endDay: 31 }
-  const plannedExpenses = data.settings.plannedExpenses || []
-  const plannedTotal = plannedExpenses.reduce((sum, p) => sum + (p.amount || 0), 0)
-
-  function updateHouseholdCycle(field, value) {
-    save((prev) => ({
-      ...prev,
-      settings: {
-        ...prev.settings,
-        householdCycle: {
-          ...(prev.settings.householdCycle || { startDay: 1, endDay: 31 }),
-          [field]: clampDay(value),
-        },
-      },
-    }))
-  }
-
-  function addPlannedExpense(e) {
-    e.preventDefault()
-    const label = plannedLabel.trim()
-    const amount = Number(plannedAmount) || 0
-    if (!label || !amount) return
-    save((prev) => ({
-      ...prev,
-      settings: {
-        ...prev.settings,
-        plannedExpenses: [...(prev.settings.plannedExpenses || []), { id: crypto.randomUUID(), label, amount }],
-      },
-    }))
-    setPlannedLabel('')
-    setPlannedAmount('')
-  }
-
-  function updatePlannedAmount(id, value) {
-    const amount = Number(value) || 0
-    save((prev) => ({
-      ...prev,
-      settings: {
-        ...prev.settings,
-        plannedExpenses: (prev.settings.plannedExpenses || []).map((p) => (p.id === id ? { ...p, amount } : p)),
-      },
-    }))
-  }
-
-  function deletePlannedExpense(id) {
-    save((prev) => ({
-      ...prev,
-      settings: {
-        ...prev.settings,
-        plannedExpenses: (prev.settings.plannedExpenses || []).filter((p) => p.id !== id),
-      },
-    }))
-  }
-
   return (
     <div className={styles.backdrop} onClick={onClose}>
       <div className={styles.sheet} onClick={(e) => e.stopPropagation()}>
         <div className={styles.grip} />
+        <div className={styles.sheetHeader}>
+          <span className={styles.sheetTitle}>設定</span>
+          <button className={styles.closeBtn} onClick={onClose}>
+            閉じる
+          </button>
+        </div>
 
         {remoteConfigured && bookId && (
           <div className={styles.section}>
@@ -204,127 +119,6 @@ export default function SettingsSheet({ onClose }) {
             <p className={styles.small}>{SYNC_LABEL[syncStatus] || SYNC_LABEL.idle}</p>
           </div>
         )}
-
-        <div className={styles.section}>
-          <div className={styles.sectionTitle}>先取り支出(固定費)</div>
-          <p className={styles.small}>
-            毎月あらかじめ分かっている支出をリストにしておき、開始日のタイミングで収入から差し引いて「今月家計で使えるお金」を出します。金額は毎月編集できます。
-          </p>
-          <div className={styles.row}>
-            <input
-              type="number"
-              inputMode="numeric"
-              min="1"
-              max="31"
-              value={householdCycle.startDay}
-              onChange={(e) => updateHouseholdCycle('startDay', e.target.value)}
-              placeholder="開始日"
-            />
-            <input
-              type="number"
-              inputMode="numeric"
-              min="1"
-              max="31"
-              value={householdCycle.endDay}
-              onChange={(e) => updateHouseholdCycle('endDay', e.target.value)}
-              placeholder="締日"
-            />
-          </div>
-
-          <form className={styles.section} onSubmit={addPlannedExpense}>
-            <div className={styles.row}>
-              <input value={plannedLabel} onChange={(e) => setPlannedLabel(e.target.value)} placeholder="項目名(例: 家賃)" />
-            </div>
-            <div className={styles.row}>
-              <input
-                type="number"
-                inputMode="numeric"
-                value={plannedAmount}
-                onChange={(e) => setPlannedAmount(e.target.value)}
-                placeholder="金額"
-              />
-              <button className={styles.btnPrimary} type="submit">
-                追加
-              </button>
-            </div>
-          </form>
-
-          {plannedExpenses.length === 0 && <p className={styles.small}>まだ登録されていません。</p>}
-          {plannedExpenses.map((p) => (
-            <div className={styles.row} key={p.id}>
-              <span style={{ flex: '0 0 92px', fontSize: 15, alignSelf: 'center' }}>{p.label}</span>
-              <input
-                type="number"
-                inputMode="numeric"
-                value={p.amount}
-                onChange={(e) => updatePlannedAmount(p.id, e.target.value)}
-              />
-              <button className={styles.kaizenDel} onClick={() => deletePlannedExpense(p.id)}>
-                削除
-              </button>
-            </div>
-          ))}
-          {plannedExpenses.length > 0 && (
-            <p className={styles.small}>
-              合計: {yen(plannedTotal)}円 ・ 毎月{householdCycle.startDay}日はじまり、{householdCycle.endDay}日
-              {householdCycle.endDay < householdCycle.startDay ? '(翌月)' : ''}締め。
-            </p>
-          )}
-        </div>
-
-        <div className={styles.section}>
-          <div className={styles.sectionTitle}>使えるお金({currentUser})</div>
-          <p className={styles.small}>家計の収入とは別枠の、自分の支出だけを差し引く月々の予算です。</p>
-          <div className={styles.row}>
-            <input
-              type="number"
-              inputMode="numeric"
-              value={allowance.monthly || ''}
-              onChange={(e) => updateAllowance('monthly', e.target.value)}
-              placeholder="月の金額"
-            />
-          </div>
-          <div className={styles.row}>
-            <input
-              type="number"
-              inputMode="numeric"
-              min="1"
-              max="31"
-              value={allowance.startDay}
-              onChange={(e) => updateAllowance('startDay', e.target.value)}
-              placeholder="開始日"
-            />
-            <input
-              type="number"
-              inputMode="numeric"
-              min="1"
-              max="31"
-              value={allowance.endDay}
-              onChange={(e) => updateAllowance('endDay', e.target.value)}
-              placeholder="締日"
-            />
-          </div>
-          <p className={styles.small}>
-            毎月{allowance.startDay}日はじまり、{allowance.endDay}日{allowance.endDay < allowance.startDay ? '(翌月)' : ''}締め。
-          </p>
-        </div>
-
-        <div className={styles.section}>
-          <div className={styles.sectionTitle}>カテゴリ予算(今月・全員分)</div>
-          <p className={styles.small}>分類ごとの月の予算です。家計に記録された支出を、記録した人にかかわらず合算して差し引きます。</p>
-          {KAKEI_OUT_CATEGORIES.map((c) => (
-            <div className={styles.row} key={c}>
-              <span style={{ flex: '0 0 92px', fontSize: 15, alignSelf: 'center' }}>{c}</span>
-              <input
-                type="number"
-                inputMode="numeric"
-                value={data.settings.categoryBudgets?.[c] || ''}
-                onChange={(e) => updateCategoryBudget(c, e.target.value)}
-                placeholder="未設定"
-              />
-            </div>
-          ))}
-        </div>
 
         <div className={styles.section}>
           <div className={styles.sectionTitle}>カイゼンメモ</div>
