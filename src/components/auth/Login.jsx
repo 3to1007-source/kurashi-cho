@@ -45,7 +45,7 @@ export default function Login({ onDone }) {
   return (
     <div className={styles.screen}>
       <div>
-        <h1 className={styles.title}>暮らし帳</h1>
+        <h1 className={styles.title}>暮らしの栞</h1>
         <p className={styles.subtitle}>帳面を開きます。</p>
       </div>
       <form className={styles.card} onSubmit={handleSubmit}>

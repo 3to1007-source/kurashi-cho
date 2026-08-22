@@ -11,7 +11,7 @@ export default function Header({ tab, onOpenSettings, onOpenMenu }) {
             ☰
           </button>
         )}
-        <span className={styles.brand}>暮らし帳 ・ {TAB_LABELS[tab]}</span>
+        <span className={styles.brand}>暮らしの栞 ・ {TAB_LABELS[tab]}</span>
       </div>
       <button className={styles.iconBtn} onClick={onOpenSettings} aria-label="設定を開く">
         ⚙

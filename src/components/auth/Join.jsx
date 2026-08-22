@@ -25,7 +25,7 @@ export default function Join({ onDone, onBack, initialBookId }) {
   return (
     <div className={styles.screen}>
       <div>
-        <h1 className={styles.title}>暮らし帳</h1>
+        <h1 className={styles.title}>暮らしの栞</h1>
         <p className={styles.subtitle}>
           {initialBookId
             ? 'QRコードから帳面IDを読み取りました。自分のID・パスワードを入力してください。'

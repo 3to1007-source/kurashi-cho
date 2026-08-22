@@ -1,4 +1,4 @@
-# 暮らし帳 (kurashi-cho)
+# 暮らしの栞 (shiori)
 
 家計簿・健康管理・カレンダーを1つにまとめた、夫婦2人で使う家計アプリのプロトタイプ。
 「別々のアプリに分かれているから続かない」を解くため、**家計・からだ・予定の3つの記録を同じ日付の上で一覧できること**を中心の価値にしている。
@@ -20,7 +20,7 @@ npm run dev
 
 - React 18 + Vite(JavaScript、状態管理ライブラリなし)
 - スタイルはCSS Modules(Tailwind不使用)
-- データ保存は `localStorage`(キー: `kurashicho:vault`)+ 任意でSupabase(`vaults`テーブル)
+- データ保存は `localStorage`(キー: `kurashicho:vault`。アプリ改名前からの名残でキー名自体は変更していない)+ 任意でSupabase(`vaults`テーブル)
 - 暗号化は Web Crypto API(`crypto.subtle`)のみ。外部の暗号ライブラリは使用していない
 
 ## 設計の要点
@@ -145,7 +145,7 @@ supabase/
 
 1. GitHubリポジトリの Settings → Secrets and variables → Actions で、`VITE_SUPABASE_URL` と `VITE_SUPABASE_ANON_KEY` を Repository secrets として追加する
 2. Settings → Pages で、Source を「GitHub Actions」に切り替える(初回のみの手動操作)
-3. `main` にpushすると自動でビルド・デプロイされ、`https://<GitHubユーザー名>.github.io/kurashi-cho/` で夫婦それぞれの端末からアクセスできるようになる
+3. `main` にpushすると自動でビルド・デプロイされ、`https://<GitHubユーザー名>.github.io/shiori/` で夫婦それぞれの端末からアクセスできるようになる
 
 ### 4. 実際に2台をつなぐ
 

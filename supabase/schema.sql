@@ -1,4 +1,4 @@
--- 暮らし帳(kurashi-cho)用のテーブル定義。
+-- 暮らしの栞(shiori)用のテーブル定義。
 -- Supabaseプロジェクトの SQL Editor でそのまま実行してください。
 --
 -- 保存されるのは暗号化されたvaultそのもの(payload)のみ。

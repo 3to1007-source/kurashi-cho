@@ -88,7 +88,7 @@ export default function Setup({ onDone, onHaveVault, onJoin }) {
   return (
     <div className={styles.screen}>
       <div>
-        <h1 className={styles.title}>暮らし帳</h1>
+        <h1 className={styles.title}>暮らしの栞</h1>
         <p className={styles.subtitle}>
           はじめまして。まずはあなたの帳面を作りましょう。
         </p>
