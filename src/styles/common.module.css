@@ -73,8 +73,12 @@
   min-height: 48px;
 }
 
-/* iOSのSafariはtype="date"の値を内部的に中央寄せで描画するため、他の入力欄と揃うよう左寄せに矯正する */
+/* type="date" はブラウザ内蔵のカレンダー部品分だけ高さ・寄せが他の入力欄とズレやすいため、
+   ネイティブの見た目を無効化して他の入力欄と完全に同じ箱に揃える */
 .input[type='date'] {
+  -webkit-appearance: none;
+  appearance: none;
+  height: 48px;
   text-align: left;
 }
 
