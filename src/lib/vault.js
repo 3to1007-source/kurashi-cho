@@ -8,9 +8,12 @@ import {
   unwrapDEK,
   encryptJSON,
   decryptJSON,
+  generateDeviceKey,
+  exportDeviceKey,
+  importDeviceKey,
   PBKDF2_ITER,
 } from './crypto'
-import { VAULT_KEY, BOOK_ID_KEY, emptyData } from './constants'
+import { VAULT_KEY, BOOK_ID_KEY, DEVICE_KEY_KEY, DEVICE_WRAP_KEY, DEVICE_USER_KEY, emptyData } from './constants'
 import { fetchRemoteVault, pushRemoteVault } from './remote'
 
 const AUTH_ERROR = 'IDまたはパスワードが違います。'
@@ -167,6 +170,45 @@ export async function persist({ vault, dek, data, by }) {
   }
   saveVaultRaw(nextVault)
   return nextVault
+}
+
+// 「この端末を覚えておく」: DEKを端末固有の鍵で包んでlocalStorageに保存する。
+// 無操作ロックや「帳面を閉じる」で forgetDevice() されるまで、次回起動時の
+// パスワード入力を省略できる。
+export async function rememberDevice({ dek, user }) {
+  const deviceKey = await generateDeviceKey()
+  const rawB64 = await exportDeviceKey(deviceKey)
+  const { wrapIv, wrapped } = await wrapDEK(dek, deviceKey)
+  localStorage.setItem(DEVICE_KEY_KEY, rawB64)
+  localStorage.setItem(DEVICE_WRAP_KEY, JSON.stringify({ wrapIv, wrapped }))
+  localStorage.setItem(DEVICE_USER_KEY, user)
+}
+
+export function forgetDevice() {
+  localStorage.removeItem(DEVICE_KEY_KEY)
+  localStorage.removeItem(DEVICE_WRAP_KEY)
+  localStorage.removeItem(DEVICE_USER_KEY)
+}
+
+export async function tryDeviceLogin() {
+  const rawB64 = localStorage.getItem(DEVICE_KEY_KEY)
+  const wrapJson = localStorage.getItem(DEVICE_WRAP_KEY)
+  const user = localStorage.getItem(DEVICE_USER_KEY)
+  if (!rawB64 || !wrapJson || !user) return null
+
+  const vault = loadVaultRaw()
+  if (!vault) return null
+
+  try {
+    const { wrapIv, wrapped } = JSON.parse(wrapJson)
+    const deviceKey = await importDeviceKey(rawB64)
+    const dek = await unwrapDEK(wrapped, deviceKey, wrapIv)
+    const data = await decryptJSON(dek, vault.iv, vault.data)
+    return { vault, dek, data, user }
+  } catch {
+    forgetDevice()
+    return null
+  }
 }
 
 export async function syncToRemote(vault) {

@@ -67,6 +67,21 @@ export async function unwrapDEK(wrappedB64, kek, wrapIvB64) {
   )
 }
 
+// 「この端末を覚えておく」ための端末鍵。人が覚えるパスワードではなく
+// 生成時からランダムな鍵なので、PBKDF2による導出は不要。
+export async function generateDeviceKey() {
+  return crypto.subtle.generateKey({ name: 'AES-GCM', length: 256 }, true, ['wrapKey', 'unwrapKey'])
+}
+
+export async function exportDeviceKey(key) {
+  const raw = await crypto.subtle.exportKey('raw', key)
+  return bufToB64(raw)
+}
+
+export async function importDeviceKey(rawB64) {
+  return crypto.subtle.importKey('raw', b64ToBuf(rawB64), { name: 'AES-GCM' }, false, ['unwrapKey'])
+}
+
 export async function encryptJSON(dek, obj) {
   const iv = randomBytes(12)
   const plaintext = enc.encode(JSON.stringify(obj))

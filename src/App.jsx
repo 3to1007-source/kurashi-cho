@@ -1,5 +1,16 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
-import { hasVault, persist, reload, pullAndMerge, syncToRemote, getBookId, decryptVaultData } from './lib/vault'
+import {
+  hasVault,
+  persist,
+  reload,
+  pullAndMerge,
+  syncToRemote,
+  getBookId,
+  decryptVaultData,
+  rememberDevice,
+  forgetDevice,
+  tryDeviceLogin,
+} from './lib/vault'
 import { isRemoteConfigured, subscribeRemote } from './lib/remote'
 import { useIdleTimer } from './lib/useIdleTimer'
 import { AppContext } from './context/AppContext'
@@ -18,19 +29,34 @@ export default function App() {
   const [currentUser, setCurrentUser] = useState(null)
   const [syncStatus, setSyncStatus] = useState('idle') // idle | syncing | ok | error
 
-  useEffect(() => {
-    setPhase(hasVault() ? 'login' : 'setup')
-  }, [])
-
-  const enterOpen = useCallback(({ vault: v, dek: d, data: dt, user }) => {
+  const enterOpen = useCallback(({ vault: v, dek: d, data: dt, user }, opts = {}) => {
     setVault(v)
     setDek(d)
     setData(dt)
     setCurrentUser(user)
     setPhase('open')
+    if (opts.remember !== false) {
+      rememberDevice({ dek: d, user }).catch(() => {})
+    }
+  }, [])
+
+  useEffect(() => {
+    if (!hasVault()) {
+      setPhase('setup')
+      return
+    }
+    tryDeviceLogin().then((result) => {
+      if (result) {
+        enterOpen(result, { remember: false })
+      } else {
+        setPhase('login')
+      }
+    })
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   const lock = useCallback(() => {
+    forgetDevice()
     setDek(null)
     setData(null)
     setCurrentUser(null)
