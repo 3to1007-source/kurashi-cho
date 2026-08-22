@@ -1,0 +1,77 @@
+:root {
+  --paper: #e9edf2;
+  --card: #ffffff;
+  --ink: #16233d;
+  --ink-soft: #5d6e88;
+  --rule: #d2d9e3;
+  --ai: #2f4a7a;
+  --shu: #b33a2b;
+  --take: #3f7d63;
+  --yamabuki: #b8811c;
+
+  --radius: 3px;
+  --font-mincho: 'Hiragino Mincho ProN', 'Yu Mincho', 'YuMincho', serif;
+  --font-gothic: 'Hiragino Sans', 'Yu Gothic', 'YuGothic', 'Meiryo', sans-serif;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#root {
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  background: var(--paper);
+  color: var(--ink);
+  font-family: var(--font-gothic);
+  -webkit-font-smoothing: antialiased;
+}
+
+h1,
+h2,
+h3 {
+  font-family: var(--font-mincho);
+  letter-spacing: 0.22em;
+  font-weight: 600;
+  margin: 0;
+}
+
+button,
+input,
+select,
+textarea {
+  font-family: inherit;
+  color: inherit;
+}
+
+button {
+  cursor: pointer;
+}
+
+.num {
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: 'tnum' 1;
+  text-align: right;
+  white-space: nowrap;
+}
+
+:focus-visible {
+  outline: 2px solid var(--ai);
+  outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+}

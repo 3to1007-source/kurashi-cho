@@ -1,0 +1,129 @@
+.calHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 8px;
+}
+
+.calNav {
+  background: none;
+  border: 1px solid var(--rule);
+  border-radius: var(--radius);
+  width: 32px;
+  height: 32px;
+  color: var(--ink-soft);
+}
+
+.calMonth {
+  font-family: var(--font-mincho);
+  letter-spacing: 0.15em;
+  font-size: 15px;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 2px;
+}
+
+.weekday {
+  text-align: center;
+  font-size: 10px;
+  color: var(--ink-soft);
+  padding-bottom: 4px;
+}
+
+.day {
+  aspect-ratio: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 3px;
+  background: var(--card);
+  border: 1px solid transparent;
+  border-radius: var(--radius);
+  font-size: 12px;
+  font-variant-numeric: tabular-nums;
+}
+
+.dayEmpty {
+  background: transparent;
+}
+
+.dayToday {
+  border-color: var(--ai);
+}
+
+.daySelected {
+  background: var(--ink);
+  color: #fff;
+}
+
+.dots {
+  display: flex;
+  gap: 2px;
+  height: 5px;
+}
+
+.dot {
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+}
+
+.dotKakei {
+  background: var(--shu);
+}
+
+.dotKarada {
+  background: var(--take);
+}
+
+.dotYotei {
+  background: var(--ai);
+}
+
+.dayCard {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.dayTitle {
+  font-size: 14px;
+  letter-spacing: 0.1em;
+  color: var(--ink-soft);
+}
+
+.subSection {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.subHead {
+  font-size: 11px;
+  letter-spacing: 0.1em;
+  color: var(--ink-soft);
+}
+
+.yoteiRow {
+  display: flex;
+  gap: 10px;
+  align-items: baseline;
+  padding: 4px 0;
+}
+
+.yoteiTime {
+  font-variant-numeric: tabular-nums;
+  font-size: 13px;
+  color: var(--ai);
+  width: 44px;
+  flex-shrink: 0;
+}
+
+.yoteiTitle {
+  flex: 1;
+  font-size: 14px;
+}

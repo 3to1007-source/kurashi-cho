@@ -1,0 +1,167 @@
+.section {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-bottom: 22px;
+}
+
+.sectionTitle {
+  font-size: 12px;
+  letter-spacing: 0.2em;
+  color: var(--ink-soft);
+}
+
+.card {
+  background: var(--card);
+  border: 1px solid var(--rule);
+  border-radius: var(--radius);
+  padding: 16px;
+}
+
+.summaryRow {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+}
+
+.summaryItem {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.summaryLabel {
+  font-size: 11px;
+  color: var(--ink-soft);
+  letter-spacing: 0.1em;
+}
+
+.summaryValue {
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: 'tnum' 1;
+  font-size: 18px;
+}
+
+.formRow {
+  display: flex;
+  gap: 8px;
+}
+
+.formCol {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  flex: 1;
+}
+
+.formCol label {
+  font-size: 11px;
+  color: var(--ink-soft);
+}
+
+.input,
+.select,
+.textarea {
+  border: 1px solid var(--rule);
+  border-radius: var(--radius);
+  padding: 9px 10px;
+  font-size: 14px;
+  background: var(--paper);
+  width: 100%;
+}
+
+.toggle {
+  display: flex;
+  border: 1px solid var(--rule);
+  border-radius: var(--radius);
+  overflow: hidden;
+}
+
+.toggleBtn {
+  flex: 1;
+  border: none;
+  background: var(--paper);
+  padding: 9px;
+  font-size: 13px;
+  color: var(--ink-soft);
+}
+
+.toggleBtnActive {
+  background: var(--shu);
+  color: #fff;
+}
+
+.toggleBtnActiveIn {
+  background: var(--take);
+  color: #fff;
+}
+
+.submitBtn {
+  border: none;
+  border-radius: var(--radius);
+  padding: 11px;
+  font-size: 14px;
+  background: var(--ai);
+  color: #fff;
+}
+
+.list {
+  display: flex;
+  flex-direction: column;
+}
+
+.listItem {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--rule);
+}
+
+.listItem:last-child {
+  border-bottom: none;
+}
+
+.listMain {
+  flex: 1;
+  min-width: 0;
+}
+
+.listTitle {
+  font-size: 14px;
+}
+
+.listMeta {
+  font-size: 11px;
+  color: var(--ink-soft);
+  margin-top: 2px;
+}
+
+.listAmount {
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: 'tnum' 1;
+  font-size: 14px;
+  text-align: right;
+  white-space: nowrap;
+}
+
+.deleteBtn {
+  background: none;
+  border: none;
+  color: var(--ink-soft);
+  font-size: 12px;
+  padding: 4px;
+}
+
+.empty {
+  color: var(--ink-soft);
+  font-size: 13px;
+  line-height: 1.7;
+  padding: 8px 0;
+}
+
+.note {
+  font-size: 11px;
+  color: var(--ink-soft);
+  line-height: 1.7;
+}
