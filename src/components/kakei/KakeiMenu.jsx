@@ -5,7 +5,7 @@ import CategoryBudgetsSettings from './CategoryBudgetsSettings'
 import styles from '../layout/SettingsSheet.module.css'
 
 const MENU_ITEMS = [
-  { key: 'planned', label: '先取り支出(固定費)', desc: '家賃・光熱費など毎月あらかじめ分かっている支出を収入から差し引く' },
+  { key: 'planned', label: '予定収入・先取り支出', desc: '給料など事前登録した収入から、家賃・光熱費などの固定費を差し引いて「今月家計で使えるお金」を出す' },
   { key: 'allowance', label: '使えるお金(お小遣い)', desc: '自分の支出だけを差し引く、月々・締日制の個人予算' },
   { key: 'category', label: 'カテゴリ予算', desc: '食費・交際費など分類ごとの月の予算' },
 ]

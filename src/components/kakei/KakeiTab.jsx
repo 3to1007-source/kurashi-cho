@@ -47,12 +47,12 @@ export default function KakeiTab() {
   const householdInfo = useMemo(
     () =>
       calcHouseholdBudget({
-        kakei: data.kakei,
+        plannedIncome: data.settings.plannedIncome,
         plannedExpenses: data.settings.plannedExpenses,
         cycle: data.settings.householdCycle,
         todayStr: today,
       }),
-    [data.kakei, data.settings.plannedExpenses, data.settings.householdCycle, today]
+    [data.settings.plannedIncome, data.settings.plannedExpenses, data.settings.householdCycle, today]
   )
 
   return (
@@ -72,12 +72,12 @@ export default function KakeiTab() {
                 </span>
               </div>
               <p className={common.note} style={{ marginTop: 8 }}>
-                {householdInfo.start} 〜 {householdInfo.end} ・ 収入{yen(householdInfo.income)}円 − 先取り支出{yen(householdInfo.plannedTotal)}円
+                {householdInfo.start} 〜 {householdInfo.end} ・ 予定収入{yen(householdInfo.income)}円 − 先取り支出{yen(householdInfo.plannedTotal)}円
               </p>
             </>
           ) : (
             <p className={common.empty}>
-              左上のメニュー(☰)の「先取り支出(固定費)」から、あらかじめ分かっている支出を登録すると、ここに今月使えるお金が表示されます。
+              左上のメニュー(☰)の「予定収入・先取り支出」から、給料などの予定収入と、あらかじめ分かっている支出を登録すると、ここに今月使えるお金が表示されます。
             </p>
           )}
         </div>

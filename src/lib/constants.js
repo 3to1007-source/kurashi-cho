@@ -30,6 +30,7 @@ export function emptyData() {
       allowances: {},
       categoryBudgets: {},
       householdCycle: { startDay: 1, endDay: 31 },
+      plannedIncome: [],
       plannedExpenses: [],
     },
   }
