@@ -1,32 +1,32 @@
 .barRow {
   display: grid;
-  grid-template-columns: 84px 1fr 64px;
+  grid-template-columns: 76px 1fr 68px;
   align-items: center;
   gap: 8px;
-  padding: 5px 0;
+  padding: 7px 0;
 }
 
 .barLabel {
-  font-size: 12px;
+  font-size: 13px;
   color: var(--ink-soft);
 }
 
 .barTrack {
-  height: 10px;
+  height: 12px;
   background: var(--paper);
-  border-radius: 5px;
+  border-radius: 6px;
   overflow: hidden;
 }
 
 .barFill {
   height: 100%;
   background: var(--shu);
-  border-radius: 5px;
+  border-radius: 6px;
 }
 
 .barValue {
   font-variant-numeric: tabular-nums;
   font-feature-settings: 'tnum' 1;
-  font-size: 12px;
+  font-size: 13px;
   text-align: right;
 }

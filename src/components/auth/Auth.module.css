@@ -9,13 +9,13 @@
 }
 
 .title {
-  font-size: 22px;
+  font-size: 24px;
   color: var(--ink);
 }
 
 .subtitle {
   color: var(--ink-soft);
-  font-size: 13px;
+  font-size: 14px;
   letter-spacing: 0.05em;
   text-align: center;
   line-height: 1.8;
@@ -23,14 +23,14 @@
 
 .card {
   width: 100%;
-  max-width: 320px;
+  max-width: 360px;
   background: var(--card);
   border: 1px solid var(--rule);
   border-radius: var(--radius);
   padding: 24px;
   display: flex;
   flex-direction: column;
-  gap: 14px;
+  gap: 16px;
 }
 
 .field {
@@ -40,7 +40,7 @@
 }
 
 .field label {
-  font-size: 12px;
+  font-size: 13px;
   color: var(--ink-soft);
   letter-spacing: 0.05em;
 }
@@ -48,9 +48,10 @@
 .field input {
   border: 1px solid var(--rule);
   border-radius: var(--radius);
-  padding: 10px 12px;
-  font-size: 15px;
+  padding: 13px 14px;
+  font-size: 16px;
   background: var(--paper);
+  min-height: 48px;
 }
 
 .field input:focus-visible {
@@ -63,9 +64,11 @@
   color: #fff;
   border: none;
   border-radius: var(--radius);
-  padding: 12px;
-  font-size: 15px;
+  padding: 15px;
+  font-size: 17px;
+  font-weight: 600;
   letter-spacing: 0.05em;
+  min-height: 52px;
 }
 
 .primary:disabled {
@@ -77,14 +80,15 @@
   background: none;
   border: none;
   color: var(--ai);
-  font-size: 13px;
-  padding: 4px;
+  font-size: 14px;
+  padding: 10px;
+  min-height: 44px;
   align-self: center;
 }
 
 .error {
   color: var(--shu);
-  font-size: 13px;
+  font-size: 14px;
   line-height: 1.6;
 }
 
@@ -92,19 +96,21 @@
   display: flex;
   gap: 8px;
   align-items: flex-start;
-  font-size: 12px;
+  font-size: 13px;
   color: var(--ink-soft);
   line-height: 1.6;
 }
 
 .consent input {
   margin-top: 3px;
+  width: 20px;
+  height: 20px;
 }
 
 .strengthTrack {
-  height: 4px;
+  height: 6px;
   background: var(--rule);
-  border-radius: 2px;
+  border-radius: 3px;
   overflow: hidden;
 }
 
@@ -114,6 +120,6 @@
 }
 
 .strengthLabel {
-  font-size: 11px;
+  font-size: 12px;
   color: var(--ink-soft);
 }

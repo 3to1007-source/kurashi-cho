@@ -2,13 +2,14 @@
   display: flex;
   flex-direction: column;
   gap: 12px;
-  margin-bottom: 22px;
+  margin-bottom: 20px;
 }
 
 .sectionTitle {
-  font-size: 12px;
+  font-size: 13px;
   letter-spacing: 0.2em;
   color: var(--ink-soft);
+  font-weight: 600;
 }
 
 .card {
@@ -31,15 +32,16 @@
 }
 
 .summaryLabel {
-  font-size: 11px;
+  font-size: 12px;
   color: var(--ink-soft);
-  letter-spacing: 0.1em;
+  letter-spacing: 0.05em;
 }
 
 .summaryValue {
   font-variant-numeric: tabular-nums;
   font-feature-settings: 'tnum' 1;
-  font-size: 18px;
+  font-size: 21px;
+  font-weight: 600;
 }
 
 .formRow {
@@ -55,7 +57,7 @@
 }
 
 .formCol label {
-  font-size: 11px;
+  font-size: 12px;
   color: var(--ink-soft);
 }
 
@@ -64,10 +66,15 @@
 .textarea {
   border: 1px solid var(--rule);
   border-radius: var(--radius);
-  padding: 9px 10px;
-  font-size: 14px;
+  padding: 13px 12px;
+  font-size: 16px;
   background: var(--paper);
   width: 100%;
+  min-height: 48px;
+}
+
+.textarea {
+  min-height: 88px;
 }
 
 .toggle {
@@ -81,9 +88,11 @@
   flex: 1;
   border: none;
   background: var(--paper);
-  padding: 9px;
-  font-size: 13px;
+  padding: 13px;
+  font-size: 16px;
+  font-weight: 600;
   color: var(--ink-soft);
+  min-height: 48px;
 }
 
 .toggleBtnActive {
@@ -99,10 +108,12 @@
 .submitBtn {
   border: none;
   border-radius: var(--radius);
-  padding: 11px;
-  font-size: 14px;
+  padding: 14px;
+  font-size: 16px;
+  font-weight: 600;
   background: var(--ai);
   color: #fff;
+  min-height: 50px;
 }
 
 .list {
@@ -114,7 +125,7 @@
   display: flex;
   align-items: center;
   gap: 10px;
-  padding: 10px 0;
+  padding: 12px 0;
   border-bottom: 1px solid var(--rule);
 }
 
@@ -128,11 +139,11 @@
 }
 
 .listTitle {
-  font-size: 14px;
+  font-size: 15px;
 }
 
 .listMeta {
-  font-size: 11px;
+  font-size: 12px;
   color: var(--ink-soft);
   margin-top: 2px;
 }
@@ -140,7 +151,8 @@
 .listAmount {
   font-variant-numeric: tabular-nums;
   font-feature-settings: 'tnum' 1;
-  font-size: 14px;
+  font-size: 15px;
+  font-weight: 600;
   text-align: right;
   white-space: nowrap;
 }
@@ -149,19 +161,20 @@
   background: none;
   border: none;
   color: var(--ink-soft);
-  font-size: 12px;
-  padding: 4px;
+  font-size: 13px;
+  padding: 8px;
+  min-height: 44px;
 }
 
 .empty {
   color: var(--ink-soft);
-  font-size: 13px;
+  font-size: 14px;
   line-height: 1.7;
   padding: 8px 0;
 }
 
 .note {
-  font-size: 11px;
+  font-size: 12px;
   color: var(--ink-soft);
   line-height: 1.7;
 }

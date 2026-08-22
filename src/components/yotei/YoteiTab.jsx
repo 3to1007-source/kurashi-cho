@@ -4,13 +4,14 @@ import { todayStr } from '../../lib/constants'
 import MonthCalendar from './MonthCalendar'
 import DayCard from './DayCard'
 import common from '../../styles/common.module.css'
+import styles from './Yotei.module.css'
 
 export default function YoteiTab() {
   const { data } = useApp()
   const today = todayStr()
   const [year, setYear] = useState(Number(today.slice(0, 4)))
   const [month, setMonth] = useState(Number(today.slice(5, 7)))
-  const [selectedDate, setSelectedDate] = useState(today)
+  const [openDate, setOpenDate] = useState(null)
 
   const marks = useMemo(() => {
     const m = {}
@@ -26,6 +27,8 @@ export default function YoteiTab() {
     })
     return m
   }, [data, year, month])
+
+  const todayMarks = marks[today] || {}
 
   function goPrev() {
     if (month === 1) {
@@ -53,9 +56,9 @@ export default function YoteiTab() {
             year={year}
             month={month}
             marks={marks}
-            selectedDate={selectedDate}
+            selectedDate={openDate}
             todayDate={today}
-            onSelect={setSelectedDate}
+            onSelect={setOpenDate}
             onPrev={goPrev}
             onNext={goNext}
           />
@@ -63,10 +66,30 @@ export default function YoteiTab() {
       </section>
 
       <section className={common.section}>
-        <div className={common.card}>
-          <DayCard date={selectedDate} />
-        </div>
+        <button className={styles.teaser} onClick={() => setOpenDate(today)}>
+          <span className={styles.teaserLabel}>今日の帳</span>
+          <span className={styles.teaserDots}>
+            {todayMarks.kakei && <span className={`${styles.teaserDot} ${styles.dotKakei}`} />}
+            {todayMarks.karada && <span className={`${styles.teaserDot} ${styles.dotKarada}`} />}
+            {todayMarks.yotei && <span className={`${styles.teaserDot} ${styles.dotYotei}`} />}
+          </span>
+          <span className={styles.teaserArrow}>見る ›</span>
+        </button>
       </section>
+
+      {openDate && (
+        <div className={styles.dayBackdrop} onClick={() => setOpenDate(null)}>
+          <div className={styles.daySheet} onClick={(e) => e.stopPropagation()}>
+            <div className={styles.dayGrip} />
+            <div className={styles.dayHeader}>
+              <button className={styles.dayClose} onClick={() => setOpenDate(null)}>
+                閉じる
+              </button>
+            </div>
+            <DayCard date={openDate} />
+          </div>
+        </div>
+      )}
     </div>
   )
 }

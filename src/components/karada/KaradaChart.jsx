@@ -1,10 +1,10 @@
 const WIDTH = 320
-const HEIGHT = 120
-const PAD = 16
+const HEIGHT = 150
+const PAD = 18
 
 export default function KaradaChart({ points }) {
   if (points.length < 2) {
-    return <p style={{ color: 'var(--ink-soft)', fontSize: 12 }}>体重の記録が2件以上になるとグラフが表示されます。</p>
+    return <p style={{ color: 'var(--ink-soft)', fontSize: 14 }}>体重の記録が2件以上になるとグラフが表示されます。</p>
   }
 
   const values = points.map((p) => p.weight)
@@ -23,9 +23,9 @@ export default function KaradaChart({ points }) {
 
   return (
     <svg viewBox={`0 0 ${WIDTH} ${HEIGHT}`} width="100%" height={HEIGHT} role="img" aria-label="体重の推移">
-      <path d={pathD} fill="none" stroke="var(--take)" strokeWidth="2" />
+      <path d={pathD} fill="none" stroke="var(--take)" strokeWidth="2.5" />
       {coords.map(([x, y], i) => (
-        <circle key={i} cx={x} cy={y} r="2.5" fill="var(--take)" />
+        <circle key={i} cx={x} cy={y} r="3.5" fill="var(--take)" />
       ))}
     </svg>
   )
