@@ -1,0 +1,15 @@
+{
+  "name": "暮らしの栞",
+  "short_name": "栞",
+  "description": "家計簿・健康管理・カレンダーを1つにまとめた、夫婦2人で使う家計アプリ",
+  "start_url": ".",
+  "scope": ".",
+  "display": "standalone",
+  "background_color": "#e9edf2",
+  "theme_color": "#2f4a7a",
+  "lang": "ja",
+  "icons": [
+    { "src": "icons/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" }
+  ]
+}
