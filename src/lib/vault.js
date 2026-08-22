@@ -10,9 +10,11 @@ import {
   decryptJSON,
   PBKDF2_ITER,
 } from './crypto'
-import { VAULT_KEY, emptyData } from './constants'
+import { VAULT_KEY, BOOK_ID_KEY, emptyData } from './constants'
+import { fetchRemoteVault, pushRemoteVault } from './remote'
 
 const AUTH_ERROR = 'IDまたはパスワードが違います。'
+const BOOK_ID_ALPHABET = '23456789ABCDEFGHJKMNPQRSTUVWXYZ' // 0/O, 1/I/L を除いた紛らわしくない文字
 
 export function loadVaultRaw() {
   const raw = localStorage.getItem(VAULT_KEY)
@@ -32,6 +34,21 @@ export function hasVault() {
   return !!loadVaultRaw()
 }
 
+export function getBookId() {
+  return localStorage.getItem(BOOK_ID_KEY)
+}
+
+function setBookId(id) {
+  localStorage.setItem(BOOK_ID_KEY, id)
+}
+
+function generateBookId() {
+  const bytes = crypto.getRandomValues(new Uint8Array(10))
+  let s = ''
+  for (const b of bytes) s += BOOK_ID_ALPHABET[b % BOOK_ID_ALPHABET.length]
+  return `${s.slice(0, 4)}-${s.slice(4, 7)}-${s.slice(7, 10)}`
+}
+
 export async function createVault({ id, password }) {
   const dek = await generateDEK()
   const { salt, iter, kek } = await newUserCredential(password)
@@ -48,8 +65,15 @@ export async function createVault({ id, password }) {
     updatedAt: Date.now(),
     updatedBy: id,
   }
+  const bookId = generateBookId()
   saveVaultRaw(vault)
-  return { vault, dek, data }
+  setBookId(bookId)
+  try {
+    await pushRemoteVault(bookId, vault)
+  } catch {
+    // オフラインや未設定でも、まずはローカルの帳面が作れていればよい。次回の保存時に再送される。
+  }
+  return { vault, dek, data, bookId }
 }
 
 export async function login({ id, password }) {
@@ -77,6 +101,39 @@ export async function login({ id, password }) {
   return { vault, dek, data }
 }
 
+export async function loginByBookId({ bookId, id, password }) {
+  const normalizedId = bookId.trim().toUpperCase()
+  let vault
+  try {
+    vault = await fetchRemoteVault(normalizedId)
+  } catch {
+    throw new Error('帳面に接続できませんでした。通信状況を確認してください。')
+  }
+  if (!vault) throw new Error('その帳面IDは見つかりません。')
+
+  const user = vault.users.find((u) => u.id === id)
+  if (!user) throw new Error(AUTH_ERROR)
+
+  let dek
+  try {
+    const kek = await deriveKEK(password, b64ToBuf(user.salt), user.iter)
+    dek = await unwrapDEK(user.wrapped, kek, user.wrapIv)
+  } catch {
+    throw new Error(AUTH_ERROR)
+  }
+
+  let data
+  try {
+    data = await decryptJSON(dek, vault.iv, vault.data)
+  } catch {
+    throw new Error(AUTH_ERROR)
+  }
+
+  saveVaultRaw(vault)
+  setBookId(normalizedId)
+  return { vault, dek, data }
+}
+
 export async function addUser({ vault, dek, id, password }) {
   if (vault.users.some((u) => u.id === id)) {
     throw new Error('そのIDはすでに使われています。')
@@ -88,6 +145,14 @@ export async function addUser({ vault, dek, id, password }) {
     users: [...vault.users, { id, salt: bufToB64(salt), iter, wrapIv, wrapped }],
   }
   saveVaultRaw(nextVault)
+  const bookId = getBookId()
+  if (bookId) {
+    try {
+      await pushRemoteVault(bookId, nextVault)
+    } catch {
+      // 次の保存時に再送される。追加自体はローカルに反映済み。
+    }
+  }
   return nextVault
 }
 
@@ -102,6 +167,30 @@ export async function persist({ vault, dek, data, by }) {
   }
   saveVaultRaw(nextVault)
   return nextVault
+}
+
+export async function syncToRemote(vault) {
+  const bookId = getBookId()
+  if (!bookId) return
+  await pushRemoteVault(bookId, vault)
+}
+
+// リモートの方が新しければローカルへ取り込む(後勝ち)。リモートが無ければnullを返す。
+export async function pullAndMerge({ dek, localVault }) {
+  const bookId = getBookId()
+  if (!bookId) return null
+
+  const remoteVault = await fetchRemoteVault(bookId)
+  if (!remoteVault) return null
+  if (localVault && remoteVault.updatedAt <= localVault.updatedAt) return null
+
+  const data = await decryptJSON(dek, remoteVault.iv, remoteVault.data)
+  saveVaultRaw(remoteVault)
+  return { vault: remoteVault, data }
+}
+
+export async function decryptVaultData(dek, vault) {
+  return decryptJSON(dek, vault.iv, vault.data)
 }
 
 export async function reload({ dek }) {

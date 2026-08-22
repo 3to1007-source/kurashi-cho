@@ -1,15 +1,17 @@
 import { useState } from 'react'
 import { createVault, hasVault } from '../../lib/vault'
+import { isRemoteConfigured } from '../../lib/remote'
 import PasswordStrengthMeter from '../common/PasswordStrengthMeter'
 import styles from './Auth.module.css'
 
-export default function Setup({ onDone, onHaveVault }) {
+export default function Setup({ onDone, onHaveVault, onJoin }) {
   const [id, setId] = useState('')
   const [password, setPassword] = useState('')
   const [confirm, setConfirm] = useState('')
   const [agree, setAgree] = useState(false)
   const [error, setError] = useState('')
   const [busy, setBusy] = useState(false)
+  const [created, setCreated] = useState(null)
 
   const canSubmit = id.trim().length > 0 && password.length >= 8 && password === confirm && agree && !busy
 
@@ -36,12 +38,49 @@ export default function Setup({ onDone, onHaveVault }) {
 
     setBusy(true)
     try {
-      const { vault, dek, data } = await createVault({ id: id.trim(), password })
-      onDone({ vault, dek, data, user: id.trim() })
+      const { vault, dek, data, bookId } = await createVault({ id: id.trim(), password })
+      if (isRemoteConfigured()) {
+        setCreated({ vault, dek, data, bookId, user: id.trim() })
+      } else {
+        onDone({ vault, dek, data, user: id.trim() })
+      }
     } catch {
       setError('帳面の作成に失敗しました。もう一度お試しください。')
       setBusy(false)
     }
+  }
+
+  if (created) {
+    return (
+      <div className={styles.screen}>
+        <div>
+          <h1 className={styles.title}>帳面ができました</h1>
+          <p className={styles.subtitle}>
+            もう一方の端末でこの帳面を開くときに使う「帳面ID」です。控えておいてください。
+          </p>
+        </div>
+        <div className={styles.card}>
+          <div className={styles.field}>
+            <label>帳面ID</label>
+            <input readOnly value={created.bookId} onFocus={(e) => e.target.select()} />
+          </div>
+          <button
+            type="button"
+            className={styles.primary}
+            onClick={() => navigator.clipboard?.writeText(created.bookId)}
+          >
+            コピーする
+          </button>
+          <button
+            type="button"
+            className={styles.link}
+            onClick={() => onDone({ vault: created.vault, dek: created.dek, data: created.data, user: created.user })}
+          >
+            わかりました。始める
+          </button>
+        </div>
+      </div>
+    )
   }
 
   return (
@@ -86,6 +125,11 @@ export default function Setup({ onDone, onHaveVault }) {
         <button className={styles.primary} type="submit" disabled={!canSubmit}>
           {busy ? '作成しています…' : '帳面を作る'}
         </button>
+        {isRemoteConfigured() && (
+          <button type="button" className={styles.link} onClick={onJoin}>
+            すでにある帳面をこの端末でも開く
+          </button>
+        )}
       </form>
     </div>
   )

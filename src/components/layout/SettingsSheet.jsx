@@ -1,11 +1,19 @@
 import { useState } from 'react'
 import { useApp } from '../../context/AppContext'
-import { addUser, exportDataJSON } from '../../lib/vault'
+import { addUser, exportDataJSON, getBookId } from '../../lib/vault'
 import { todayStr } from '../../lib/constants'
 import styles from './SettingsSheet.module.css'
 
+const SYNC_LABEL = {
+  idle: '同期: 待機中',
+  syncing: '同期: 送信中…',
+  ok: '同期: 最新',
+  error: '同期: エラー(ローカルには保存済み)',
+}
+
 export default function SettingsSheet({ onClose }) {
-  const { data, save, vault, dek, currentUser, setVault, reload, lock } = useApp()
+  const { data, save, vault, dek, currentUser, setVault, reload, lock, syncStatus, remoteConfigured } = useApp()
+  const bookId = getBookId()
 
   const [kaizenText, setKaizenText] = useState('')
   const [newId, setNewId] = useState('')
@@ -13,6 +21,7 @@ export default function SettingsSheet({ onClose }) {
   const [addUserError, setAddUserError] = useState('')
   const [addUserOk, setAddUserOk] = useState(false)
   const [reloadMsg, setReloadMsg] = useState('')
+  const [copied, setCopied] = useState(false)
 
   function addKaizen(e) {
     e.preventDefault()
@@ -84,6 +93,27 @@ export default function SettingsSheet({ onClose }) {
       <div className={styles.sheet} onClick={(e) => e.stopPropagation()}>
         <div className={styles.grip} />
 
+        {remoteConfigured && bookId && (
+          <div className={styles.section}>
+            <div className={styles.sectionTitle}>他の端末と共有</div>
+            <p className={styles.small}>この帳面ID・自分のID・パスワードで、他の端末からも同じ帳面を開けます。</p>
+            <div className={styles.row}>
+              <input readOnly value={bookId} onFocus={(e) => e.target.select()} />
+              <button
+                className={styles.btn}
+                onClick={() => {
+                  navigator.clipboard?.writeText(bookId)
+                  setCopied(true)
+                  setTimeout(() => setCopied(false), 1500)
+                }}
+              >
+                {copied ? 'コピーしました' : 'コピー'}
+              </button>
+            </div>
+            <p className={styles.small}>{SYNC_LABEL[syncStatus] || SYNC_LABEL.idle}</p>
+          </div>
+        )}
+
         <div className={styles.section}>
           <div className={styles.sectionTitle}>カイゼンメモ</div>
           <form className={styles.row} onSubmit={addKaizen}>
@@ -131,7 +161,11 @@ export default function SettingsSheet({ onClose }) {
               </button>
             </div>
             {addUserError && <p className={styles.small} style={{ color: 'var(--shu)' }}>{addUserError}</p>}
-            {addUserOk && <p className={styles.small}>登録しました。同じ帳面を新しいIDで開けます。</p>}
+            {addUserOk && (
+              <p className={styles.small}>
+                登録しました。同じ帳面を新しいIDで開けます{remoteConfigured && bookId && '(他の端末なら帳面IDも必要です)'}。
+              </p>
+            )}
           </form>
         </div>
 

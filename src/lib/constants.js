@@ -1,4 +1,5 @@
 export const VAULT_KEY = 'kurashicho:vault'
+export const BOOK_ID_KEY = 'kurashicho:bookId'
 
 export const KAKEI_OUT_CATEGORIES = ['食費', '住居', '光熱・通信', '交通', '日用品', '医療', '交際・娯楽', 'その他']
 export const KAKEI_IN_CATEGORIES = ['給与・役員報酬', '事業・副業', '賞与', 'その他']

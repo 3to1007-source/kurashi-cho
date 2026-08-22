@@ -3,7 +3,7 @@
 家計簿・健康管理・カレンダーを1つにまとめた、夫婦2人で使う家計アプリのプロトタイプ。
 「別々のアプリに分かれているから続かない」を解くため、**家計・からだ・予定の3つの記録を同じ日付の上で一覧できること**を中心の価値にしている。
 
-現段階はローカルで完結するSPA。バックエンドは持たず、すべてのデータは端末の `localStorage` に暗号化して保存する。
+SPAとして動き、すべてのデータは端末の `localStorage` に暗号化して保存する。Supabase(無料枠のPostgreSQL)を設定すると、同じ帳面を複数の端末から開けるようになる。**未設定でも今まで通りローカルのみで動く**(設定は任意)。
 
 ## 起動方法
 
@@ -14,11 +14,13 @@ npm run dev
 
 `npm run build` でビルド、`npm run preview` でビルド結果の確認ができる。
 
+複数端末で使いたい場合は下の「複数端末で使う(Supabase連携)」を参照。
+
 ## 技術構成
 
 - React 18 + Vite(JavaScript、状態管理ライブラリなし)
 - スタイルはCSS Modules(Tailwind不使用)
-- データ保存は `localStorage`(キー: `kurashicho:vault`)
+- データ保存は `localStorage`(キー: `kurashicho:vault`)+ 任意でSupabase(`vaults`テーブル)
 - 暗号化は Web Crypto API(`crypto.subtle`)のみ。外部の暗号ライブラリは使用していない
 
 ## 設計の要点
@@ -73,6 +75,14 @@ npm run dev
 
 給与所得控除・所得税速算表・住民税所得割・ふるさと納税上限・NISAの複利計算はすべて `src/lib/tax.js` に実装している。**表示される金額はすべて概算・目安であり、実際の税額は税理士や公式シミュレーターで確認する必要がある**旨を画面上に明記している。
 
+### 複数端末での同期(帳面ID)
+
+Supabaseを設定すると、暗号化済みのvault(封筒方式でラップした鍵と暗号文)を1行(`id = 帳面ID`)としてクラウドに保存する。**サーバーが受け取るのは暗号文だけ**で、平文データやパスワードは一切送らない。帳面IDそのものは推測困難な12文字のランダム文字列で、実質的に「知っている人だけが辿り着ける」共有リンクのように機能する(内容の秘匿は引き続き暗号化が担う)。
+
+- 新しい帳面を作ると帳面IDが発行される。もう一方の端末では「すでにある帳面をこの端末でも開く」から、帳面ID・ID・パスワードを入力して同じ帳面を開ける
+- 保存するたびにクラウドへ送信し、帳面を開いた瞬間・「最新に更新」を押した瞬間・他の端末からの更新をリアルタイム受信した瞬間に、**新しい方(`updatedAt`)を採用する「後勝ち」**でローカルへ取り込む
+- 通信できない/未設定のときは自動的にローカルのみで動作し、データが失われることはない
+
 ### やっていないこと(意図的)
 
 - 銀行口座との自動連携(残高・入出金の参照)は実装しない。銀行法上の「電子決済等代行業(参照型)」に該当し、登録なしには行えないため。当面は手入力とCSV取込のみを想定。
@@ -82,20 +92,52 @@ npm run dev
 
 ```
 src/
-  lib/          crypto.js(暗号化) / vault.js(保管庫の読み書き) / tax.js(税計算) / constants.js / format.js / useIdleTimer.js
-  context/      AppContext(DEK・データ・ログインユーザーの共有)
+  lib/          crypto.js(暗号化) / vault.js(保管庫の読み書き・同期) / remote.js(Supabase連携) / tax.js(税計算) / constants.js / format.js / useIdleTimer.js
+  context/      AppContext(DEK・データ・ログインユーザー・同期状態の共有)
   components/
-    auth/       Boot / Setup / Login
+    auth/       Boot / Setup / Login / Join(帳面IDで別端末から開く)
     layout/     Shell / Header / TabBar / SettingsSheet
     kakei/      家計タブ
     karada/     からだタブ
     yotei/      予定タブ(月カレンダー・その日の帳)
     shisan/     試算タブ(税額試算・NISA)
     common/     共通コンポーネント(パスワード強度メーターなど)
+supabase/
+  schema.sql    Supabase側に作るテーブルとRLSポリシー
+.github/workflows/
+  deploy.yml    GitHub Pagesへの自動デプロイ
 ```
+
+## 複数端末で使う(Supabase連携)
+
+無料のSupabaseプロジェクトを1つ作るだけで、夫婦それぞれの端末から同じ帳面を開けるようになる。
+
+### 1. Supabaseプロジェクトを作る
+
+1. https://supabase.com で無料アカウントを作り、新しいプロジェクトを作成する
+2. プロジェクトのSQL Editorを開き、このリポジトリの `supabase/schema.sql` の内容をそのまま実行する
+3. Settings → API から「Project URL」と「anon public」キーを控える
+
+### 2. ローカルで試す場合
+
+リポジトリ直下に `.env` を作り、`.env.example` を参考に2つの値を貼り付けて `npm run dev` を再起動する。
+
+### 3. それぞれのスマホ・PCから使えるようにする(GitHub Pages)
+
+このリポジトリには `main` へのpushで自動的にGitHub Pagesへデプロイするワークフロー(`.github/workflows/deploy.yml`)が入っている。有効にする手順:
+
+1. GitHubリポジトリの Settings → Secrets and variables → Actions で、`VITE_SUPABASE_URL` と `VITE_SUPABASE_ANON_KEY` を Repository secrets として追加する
+2. Settings → Pages で、Source を「GitHub Actions」に切り替える(初回のみの手動操作)
+3. `main` にpushすると自動でビルド・デプロイされ、`https://<GitHubユーザー名>.github.io/kurashi-cho/` で夫婦それぞれの端末からアクセスできるようになる
+
+### 4. 実際に2台をつなぐ
+
+1. 1台目で帳面を新規作成すると「帳面ID」が表示されるので控える(あとから設定シートでも確認できる)
+2. 1台目の設定シート「家族を追加」でもう1人のID・パスワードを登録する
+3. 2台目で「すでにある帳面をこの端末でも開く」を選び、帳面ID・2人目のID・パスワードを入力する
 
 ## 次にやる予定
 
-- バックエンド化(現状は複数端末での同時編集は後勝ちで上書きされる)
+- 同時編集時の衝突解決をより丁寧にする(現状は`updatedAt`による単純な後勝ち)
 - PWA化してスマホのホーム画面から起動できるようにする
 - Expo(React Native)への移植とストア申請
