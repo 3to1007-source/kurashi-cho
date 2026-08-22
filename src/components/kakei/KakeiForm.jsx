@@ -52,21 +52,20 @@ export default function KakeiForm() {
         </button>
       </div>
 
-      <div className={common.formRow}>
-        <div className={common.formCol}>
-          <label htmlFor="kakei-date">日付</label>
-          <input id="kakei-date" className={common.input} type="date" value={date} onChange={(e) => setDate(e.target.value)} />
-        </div>
-        <div className={common.formCol}>
-          <label htmlFor="kakei-cat">分類</label>
-          <select id="kakei-cat" className={common.select} value={category} onChange={(e) => setCategory(e.target.value)}>
-            {categories.map((c) => (
-              <option key={c} value={c}>
-                {c}
-              </option>
-            ))}
-          </select>
-        </div>
+      <div className={common.formCol}>
+        <label htmlFor="kakei-date">日付</label>
+        <input id="kakei-date" className={common.input} type="date" value={date} onChange={(e) => setDate(e.target.value)} />
+      </div>
+
+      <div className={common.formCol}>
+        <label htmlFor="kakei-cat">分類</label>
+        <select id="kakei-cat" className={common.select} value={category} onChange={(e) => setCategory(e.target.value)}>
+          {categories.map((c) => (
+            <option key={c} value={c}>
+              {c}
+            </option>
+          ))}
+        </select>
       </div>
 
       <div className={common.formCol}>
