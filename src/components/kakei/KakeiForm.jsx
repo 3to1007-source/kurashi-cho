@@ -1,6 +1,8 @@
-import { useState } from 'react'
+import { useRef, useState } from 'react'
 import { useApp } from '../../context/AppContext'
 import { KAKEI_IN_CATEGORIES, KAKEI_OUT_CATEGORIES, todayStr } from '../../lib/constants'
+import { recognizeReceipt, extractAmount, extractDate } from '../../lib/receiptOcr'
+import { yen } from '../../lib/format'
 import common from '../../styles/common.module.css'
 
 export default function KakeiForm() {
@@ -10,12 +12,41 @@ export default function KakeiForm() {
   const [category, setCategory] = useState(KAKEI_OUT_CATEGORIES[0])
   const [amount, setAmount] = useState('')
   const [memo, setMemo] = useState('')
+  const [ocrBusy, setOcrBusy] = useState(false)
+  const [ocrNote, setOcrNote] = useState('')
+  const fileInputRef = useRef(null)
 
   const categories = type === 'out' ? KAKEI_OUT_CATEGORIES : KAKEI_IN_CATEGORIES
 
   function handleType(nextType) {
     setType(nextType)
     setCategory(nextType === 'out' ? KAKEI_OUT_CATEGORIES[0] : KAKEI_IN_CATEGORIES[0])
+  }
+
+  async function handleReceiptFile(e) {
+    const file = e.target.files?.[0]
+    e.target.value = ''
+    if (!file) return
+
+    setOcrBusy(true)
+    setOcrNote('')
+    try {
+      const text = await recognizeReceipt(file)
+      const amt = extractAmount(text)
+      const foundDate = extractDate(text, todayStr().slice(0, 4))
+
+      if (amt) {
+        setAmount(String(amt))
+        setOcrNote(`レシートから金額${yen(amt)}円を読み取りました。内容を確認してください。`)
+      } else {
+        setOcrNote('金額を読み取れませんでした。手入力してください。')
+      }
+      if (foundDate) setDate(foundDate)
+    } catch {
+      setOcrNote('レシートの読み取りに失敗しました。手入力してください。')
+    } finally {
+      setOcrBusy(false)
+    }
   }
 
   function handleSubmit(e) {
@@ -31,6 +62,7 @@ export default function KakeiForm() {
     }))
     setAmount('')
     setMemo('')
+    setOcrNote('')
   }
 
   return (
@@ -51,6 +83,36 @@ export default function KakeiForm() {
           収入
         </button>
       </div>
+
+      {type === 'out' && (
+        <div className={common.formCol}>
+          <input
+            ref={fileInputRef}
+            type="file"
+            accept="image/*"
+            capture="environment"
+            style={{ display: 'none' }}
+            onChange={handleReceiptFile}
+          />
+          <button
+            type="button"
+            onClick={() => fileInputRef.current?.click()}
+            disabled={ocrBusy}
+            style={{
+              border: '1px solid var(--rule)',
+              borderRadius: 'var(--radius)',
+              padding: 13,
+              fontSize: 15,
+              background: 'var(--paper)',
+              color: 'var(--ink)',
+              minHeight: 48,
+            }}
+          >
+            {ocrBusy ? 'レシートを読み取っています…' : 'レシートを撮影して金額を読み取る'}
+          </button>
+          {ocrNote && <p className={common.note}>{ocrNote}</p>}
+        </div>
+      )}
 
       <div className={common.formCol}>
         <label htmlFor="kakei-date">日付</label>
