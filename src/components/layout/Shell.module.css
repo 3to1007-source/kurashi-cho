@@ -84,15 +84,3 @@
   color: var(--ink);
   font-weight: 700;
 }
-
-.tabDot {
-  width: 7px;
-  height: 7px;
-  border-radius: 50%;
-  background: currentColor;
-  opacity: 0;
-}
-
-.tabActive .tabDot {
-  opacity: 1;
-}
