@@ -1,7 +1,8 @@
 import { useState } from 'react'
-import { createVault, hasVault } from '../../lib/vault'
+import { createVault, hasVault, buildJoinUrl } from '../../lib/vault'
 import { isRemoteConfigured } from '../../lib/remote'
 import PasswordStrengthMeter from '../common/PasswordStrengthMeter'
+import BookQRCode from '../common/BookQRCode'
 import styles from './Auth.module.css'
 
 export default function Setup({ onDone, onHaveVault, onJoin }) {
@@ -56,10 +57,11 @@ export default function Setup({ onDone, onHaveVault, onJoin }) {
         <div>
           <h1 className={styles.title}>帳面ができました</h1>
           <p className={styles.subtitle}>
-            もう一方の端末でこの帳面を開くときに使う「帳面ID」です。控えておいてください。
+            もう一方の端末のカメラでQRコードを読み取ると、帳面IDが自動で入力されます。読み取れない場合は下の帳面IDを控えて手入力してください。
           </p>
         </div>
         <div className={styles.card}>
+          <BookQRCode url={buildJoinUrl(created.bookId)} />
           <div className={styles.field}>
             <label>帳面ID</label>
             <input readOnly value={created.bookId} onFocus={(e) => e.target.select()} />

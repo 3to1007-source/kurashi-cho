@@ -1,7 +1,8 @@
 import { useState } from 'react'
 import { useApp } from '../../context/AppContext'
-import { addUser, exportDataJSON, getBookId } from '../../lib/vault'
+import { addUser, exportDataJSON, getBookId, buildJoinUrl } from '../../lib/vault'
 import { todayStr } from '../../lib/constants'
+import BookQRCode from '../common/BookQRCode'
 import styles from './SettingsSheet.module.css'
 
 const SYNC_LABEL = {
@@ -102,7 +103,10 @@ export default function SettingsSheet({ onClose }) {
         {remoteConfigured && bookId && (
           <div className={styles.section}>
             <div className={styles.sectionTitle}>他の端末と共有</div>
-            <p className={styles.small}>この帳面ID・自分のID・パスワードで、他の端末からも同じ帳面を開けます。</p>
+            <p className={styles.small}>
+              もう一方の端末のカメラでQRコードを読み取ると、帳面IDが自動で入力されます。あとは自分のID・パスワードを入力するだけです。
+            </p>
+            <BookQRCode url={buildJoinUrl(bookId)} size={160} />
             <div className={styles.row}>
               <input readOnly value={bookId} onFocus={(e) => e.target.select()} />
               <button

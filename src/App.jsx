@@ -28,6 +28,8 @@ export default function App() {
   const [data, setData] = useState(null)
   const [currentUser, setCurrentUser] = useState(null)
   const [syncStatus, setSyncStatus] = useState('idle') // idle | syncing | ok | error
+  const [joinBookId, setJoinBookId] = useState(null)
+  const bootedRef = useRef(false)
 
   const enterOpen = useCallback(({ vault: v, dek: d, data: dt, user }, opts = {}) => {
     setVault(v)
@@ -41,8 +43,25 @@ export default function App() {
   }, [])
 
   useEffect(() => {
+    // React 18 StrictMode(開発時)はこのeffectを2回実行する。URLを読んでから
+    // history.replaceStateで消す処理は1回目で完結させないと、2回目は既に
+    // 消えた後のURLを読んでしまい判定を誤る。refで1回だけに固定する。
+    if (bootedRef.current) return
+    bootedRef.current = true
+
+    const params = new URLSearchParams(window.location.search)
+    const sharedBookId = params.get('book')
+    if (sharedBookId) {
+      window.history.replaceState({}, '', window.location.pathname)
+    }
+
     if (!hasVault()) {
-      setPhase('setup')
+      if (sharedBookId) {
+        setJoinBookId(sharedBookId)
+        setPhase('join')
+      } else {
+        setPhase('setup')
+      }
       return
     }
     tryDeviceLogin().then((result) => {
@@ -163,7 +182,7 @@ export default function App() {
   }
 
   if (phase === 'join') {
-    return <Join onDone={enterOpen} onBack={() => setPhase('setup')} />
+    return <Join onDone={enterOpen} onBack={() => setPhase('setup')} initialBookId={joinBookId} />
   }
 
   if (phase === 'login') {

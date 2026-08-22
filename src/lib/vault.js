@@ -37,6 +37,12 @@ export function hasVault() {
   return !!loadVaultRaw()
 }
 
+// 他の端末のカメラでQRコードを読み取ったときに開くURL。
+// パスワードは含めない(帳面IDのみ)。読み取った側は自分のID・パスワードをその場で入力する。
+export function buildJoinUrl(bookId) {
+  return `${window.location.origin}${import.meta.env.BASE_URL}?book=${encodeURIComponent(bookId)}`
+}
+
 export function getBookId() {
   return localStorage.getItem(BOOK_ID_KEY)
 }

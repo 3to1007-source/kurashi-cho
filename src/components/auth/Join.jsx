@@ -2,8 +2,8 @@ import { useState } from 'react'
 import { loginByBookId } from '../../lib/vault'
 import styles from './Auth.module.css'
 
-export default function Join({ onDone, onBack }) {
-  const [bookId, setBookId] = useState('')
+export default function Join({ onDone, onBack, initialBookId }) {
+  const [bookId, setBookId] = useState(initialBookId || '')
   const [id, setId] = useState('')
   const [password, setPassword] = useState('')
   const [error, setError] = useState('')
@@ -27,7 +27,9 @@ export default function Join({ onDone, onBack }) {
       <div>
         <h1 className={styles.title}>暮らし帳</h1>
         <p className={styles.subtitle}>
-          もう一方の端末で作った帳面を、この端末でも開きます。
+          {initialBookId
+            ? 'QRコードから帳面IDを読み取りました。自分のID・パスワードを入力してください。'
+            : 'もう一方の端末で作った帳面を、この端末でも開きます。'}
         </p>
       </div>
       <form className={styles.card} onSubmit={handleSubmit}>
