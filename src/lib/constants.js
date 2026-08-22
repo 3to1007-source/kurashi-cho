@@ -16,7 +16,6 @@ export function emptyData() {
     kakei: [],
     karada: [],
     yotei: [],
-    kaizen: [],
     settings: {
       kyuyo: 0,
       jigyoUriage: 0,

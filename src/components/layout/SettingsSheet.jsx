@@ -20,41 +20,15 @@ const THEMES = [
 ]
 
 export default function SettingsSheet({ onClose }) {
-  const { data, save, vault, dek, currentUser, setVault, reload, lock, syncStatus, remoteConfigured } = useApp()
+  const { data, save, vault, dek, setVault, reload, lock, syncStatus, remoteConfigured } = useApp()
   const bookId = getBookId()
 
-  const [kaizenText, setKaizenText] = useState('')
   const [newId, setNewId] = useState('')
   const [newPw, setNewPw] = useState('')
   const [addUserError, setAddUserError] = useState('')
   const [addUserOk, setAddUserOk] = useState(false)
   const [reloadMsg, setReloadMsg] = useState('')
   const [copied, setCopied] = useState(false)
-
-  function addKaizen(e) {
-    e.preventDefault()
-    const text = kaizenText.trim()
-    if (!text) return
-    save((prev) => ({
-      ...prev,
-      kaizen: [
-        ...prev.kaizen,
-        { id: crypto.randomUUID(), text, by: currentUser, at: todayStr(), done: false },
-      ],
-    }))
-    setKaizenText('')
-  }
-
-  function toggleKaizen(id) {
-    save((prev) => ({
-      ...prev,
-      kaizen: prev.kaizen.map((k) => (k.id === id ? { ...k, done: !k.done } : k)),
-    }))
-  }
-
-  function deleteKaizen(id) {
-    save((prev) => ({ ...prev, kaizen: prev.kaizen.filter((k) => k.id !== id) }))
-  }
 
   async function handleAddUser(e) {
     e.preventDefault()
@@ -93,8 +67,6 @@ export default function SettingsSheet({ onClose }) {
     a.remove()
     URL.revokeObjectURL(url)
   }
-
-  const kaizenSorted = [...data.kaizen].sort((a, b) => (a.at < b.at ? 1 : -1))
 
   function updateTheme(themeId) {
     save((prev) => ({ ...prev, settings: { ...prev.settings, theme: themeId } }))
@@ -157,35 +129,6 @@ export default function SettingsSheet({ onClose }) {
         )}
 
         <div className={styles.section}>
-          <div className={styles.sectionTitle}>カイゼンメモ</div>
-          <form className={styles.row} onSubmit={addKaizen}>
-            <input
-              value={kaizenText}
-              onChange={(e) => setKaizenText(e.target.value)}
-              placeholder="次に直したいことを書く"
-            />
-            <button className={styles.btnPrimary} type="submit">
-              追加
-            </button>
-          </form>
-          {kaizenSorted.length === 0 && <p className={styles.small}>まだ何も書かれていません。</p>}
-          {kaizenSorted.map((k) => (
-            <div key={k.id} className={styles.kaizenItem}>
-              <input type="checkbox" checked={k.done} onChange={() => toggleKaizen(k.id)} />
-              <div>
-                <div className={`${styles.kaizenText} ${k.done ? styles.kaizenDone : ''}`}>{k.text}</div>
-                <div className={styles.kaizenMeta}>
-                  {k.by} ・ {k.at}
-                </div>
-              </div>
-              <button className={styles.kaizenDel} onClick={() => deleteKaizen(k.id)}>
-                削除
-              </button>
-            </div>
-          ))}
-        </div>
-
-        <div className={styles.section}>
           <div className={styles.sectionTitle}>家族を追加</div>
           <form className={styles.section} onSubmit={handleAddUser}>
             <div className={styles.row}>
@@ -219,7 +162,7 @@ export default function SettingsSheet({ onClose }) {
             データを書き出す(JSON)
           </button>
           <button className={styles.fullBtn} style={{ color: 'var(--shu)' }} onClick={lock}>
-            帳面を閉じる
+            帳面を閉じる(ログアウト)
           </button>
         </div>
       </div>
