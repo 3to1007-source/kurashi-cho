@@ -73,6 +73,16 @@
   min-height: 48px;
 }
 
+/* iOSのSafariはtype="date"の値を内部的に中央寄せで描画するため、他の入力欄と揃うよう左寄せに矯正する */
+.input[type='date'] {
+  text-align: left;
+}
+
+.input[type='date']::-webkit-date-and-time-value {
+  text-align: left;
+  margin: 0;
+}
+
 .textarea {
   min-height: 88px;
 }
