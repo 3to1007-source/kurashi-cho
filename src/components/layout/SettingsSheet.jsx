@@ -12,6 +12,13 @@ const SYNC_LABEL = {
   error: '同期: エラー(ローカルには保存済み)',
 }
 
+const THEMES = [
+  { id: '', label: '和紙(標準)', paper: '#e9edf2', accent: '#2f4a7a' },
+  { id: 'sumi', label: '墨', paper: '#eeebe4', accent: '#37475c' },
+  { id: 'indigo', label: '藍', paper: '#e3e8f0', accent: '#2843a0' },
+  { id: 'sakura', label: '桜', paper: '#f5ecec', accent: '#c0506a' },
+]
+
 export default function SettingsSheet({ onClose }) {
   const { data, save, vault, dek, currentUser, setVault, reload, lock, syncStatus, remoteConfigured } = useApp()
   const bookId = getBookId()
@@ -89,6 +96,10 @@ export default function SettingsSheet({ onClose }) {
 
   const kaizenSorted = [...data.kaizen].sort((a, b) => (a.at < b.at ? 1 : -1))
 
+  function updateTheme(themeId) {
+    save((prev) => ({ ...prev, settings: { ...prev.settings, theme: themeId } }))
+  }
+
   return (
     <div className={styles.backdrop} onClick={onClose}>
       <div className={styles.sheet} onClick={(e) => e.stopPropagation()}>
@@ -98,6 +109,27 @@ export default function SettingsSheet({ onClose }) {
           <button className={styles.closeBtn} onClick={onClose}>
             閉じる
           </button>
+        </div>
+
+        <div className={styles.section}>
+          <div className={styles.sectionTitle}>テーマ</div>
+          <p className={styles.small}>自分の手帳のように、色合いを選べます。</p>
+          <div className={styles.themeGrid}>
+            {THEMES.map((t) => {
+              const active = (data.settings.theme || '') === t.id
+              return (
+                <button
+                  key={t.id || 'default'}
+                  type="button"
+                  className={`${styles.themeSwatch} ${active ? styles.themeSwatchActive : ''}`}
+                  onClick={() => updateTheme(t.id)}
+                >
+                  <span className={styles.themeSwatchPreview} style={{ background: t.paper, boxShadow: `inset 0 0 0 3px ${t.accent}` }} />
+                  <span className={styles.themeSwatchLabel}>{t.label}</span>
+                </button>
+              )
+            })}
+          </div>
         </div>
 
         {remoteConfigured && bookId && (

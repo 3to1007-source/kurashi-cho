@@ -188,3 +188,37 @@
   color: var(--ink-soft);
   line-height: 1.6;
 }
+
+.themeGrid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 10px;
+}
+
+.themeSwatch {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  border: 2px solid var(--rule);
+  border-radius: var(--radius);
+  padding: 10px 12px;
+  min-height: 52px;
+  text-align: left;
+}
+
+.themeSwatchActive {
+  border-color: var(--ai);
+}
+
+.themeSwatchPreview {
+  flex-shrink: 0;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.themeSwatchLabel {
+  font-size: 14px;
+  color: var(--ink);
+}

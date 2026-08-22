@@ -1,4 +1,4 @@
-import { useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { useApp } from '../../context/AppContext'
 import { KAKEI_IN_CATEGORIES, KAKEI_OUT_CATEGORIES, todayStr } from '../../lib/constants'
 import { recognizeReceipt, extractAmount, extractDate } from '../../lib/receiptOcr'
@@ -6,21 +6,32 @@ import { yen } from '../../lib/format'
 import common from '../../styles/common.module.css'
 
 export default function KakeiForm() {
-  const { save, currentUser } = useApp()
+  const { data, save, currentUser } = useApp()
+  const outCategories = data.settings.kakeiOutCategories?.length ? data.settings.kakeiOutCategories : KAKEI_OUT_CATEGORIES
+  const inCategories = data.settings.kakeiInCategories?.length ? data.settings.kakeiInCategories : KAKEI_IN_CATEGORIES
+
   const [type, setType] = useState('out')
   const [date, setDate] = useState(todayStr())
-  const [category, setCategory] = useState(KAKEI_OUT_CATEGORIES[0])
+  const [category, setCategory] = useState(outCategories[0])
   const [amount, setAmount] = useState('')
   const [memo, setMemo] = useState('')
   const [ocrBusy, setOcrBusy] = useState(false)
   const [ocrNote, setOcrNote] = useState('')
   const fileInputRef = useRef(null)
 
-  const categories = type === 'out' ? KAKEI_OUT_CATEGORIES : KAKEI_IN_CATEGORIES
+  const categories = type === 'out' ? outCategories : inCategories
+
+  useEffect(() => {
+    if (!categories.includes(category)) {
+      setCategory(categories[0] || '')
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [categories.join('|')])
 
   function handleType(nextType) {
     setType(nextType)
-    setCategory(nextType === 'out' ? KAKEI_OUT_CATEGORIES[0] : KAKEI_IN_CATEGORIES[0])
+    const list = nextType === 'out' ? outCategories : inCategories
+    setCategory(list[0] || '')
   }
 
   async function handleReceiptFile(e) {

@@ -4,6 +4,7 @@ import styles from '../layout/SettingsSheet.module.css'
 
 export default function CategoryBudgetsSettings({ onBack, onClose }) {
   const { data, save } = useApp()
+  const categories = data.settings.kakeiOutCategories?.length ? data.settings.kakeiOutCategories : KAKEI_OUT_CATEGORIES
 
   function updateCategoryBudget(category, value) {
     const amount = Number(value) || 0
@@ -32,7 +33,7 @@ export default function CategoryBudgetsSettings({ onBack, onClose }) {
 
         <div className={styles.section}>
           <p className={styles.small}>分類ごとの月の予算です。家計に記録された支出を、記録した人にかかわらず合算して差し引きます。</p>
-          {KAKEI_OUT_CATEGORIES.map((c) => (
+          {categories.map((c) => (
             <div className={styles.row} key={c}>
               <span style={{ flex: '0 0 92px', fontSize: 15, alignSelf: 'center' }}>{c}</span>
               <input

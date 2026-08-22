@@ -32,6 +32,9 @@ export function emptyData() {
       householdCycle: { startDay: 1, endDay: 31 },
       plannedIncome: [],
       plannedExpenses: [],
+      kakeiOutCategories: [...KAKEI_OUT_CATEGORIES],
+      kakeiInCategories: [...KAKEI_IN_CATEGORIES],
+      theme: '',
     },
   }
 }

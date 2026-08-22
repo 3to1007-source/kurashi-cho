@@ -2,12 +2,14 @@ import { useState } from 'react'
 import PlannedExpensesSettings from './PlannedExpensesSettings'
 import AllowanceSettings from './AllowanceSettings'
 import CategoryBudgetsSettings from './CategoryBudgetsSettings'
+import CategoryEditSettings from './CategoryEditSettings'
 import styles from '../layout/SettingsSheet.module.css'
 
 const MENU_ITEMS = [
   { key: 'planned', label: '予定収入・先取り支出', desc: '給料など事前登録した収入から、家賃・光熱費などの固定費を差し引いて「今月家計で使えるお金」を出す' },
   { key: 'allowance', label: '使えるお金(お小遣い)', desc: '自分の支出だけを差し引く、月々・締日制の個人予算' },
   { key: 'category', label: 'カテゴリ予算', desc: '食費・交際費など分類ごとの月の予算' },
+  { key: 'categoryEdit', label: '分類の編集', desc: '食費・住居など、記録フォームで使う分類名を自由に追加・改名・削除する' },
 ]
 
 export default function KakeiMenu({ onClose }) {
@@ -16,6 +18,7 @@ export default function KakeiMenu({ onClose }) {
   if (section === 'planned') return <PlannedExpensesSettings onBack={() => setSection(null)} onClose={onClose} />
   if (section === 'allowance') return <AllowanceSettings onBack={() => setSection(null)} onClose={onClose} />
   if (section === 'category') return <CategoryBudgetsSettings onBack={() => setSection(null)} onClose={onClose} />
+  if (section === 'categoryEdit') return <CategoryEditSettings onBack={() => setSection(null)} onClose={onClose} />
 
   return (
     <div className={styles.backdrop} onClick={onClose}>

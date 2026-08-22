@@ -84,6 +84,15 @@ export default function App() {
 
   useIdleTimer(lock, phase === 'open')
 
+  useEffect(() => {
+    const theme = data?.settings?.theme
+    if (theme) {
+      document.documentElement.dataset.theme = theme
+    } else {
+      delete document.documentElement.dataset.theme
+    }
+  }, [data?.settings?.theme])
+
   const dataRef = useRef(data)
   useEffect(() => {
     dataRef.current = data

@@ -18,6 +18,43 @@
   --font-gothic: 'Hiragino Sans', 'Yu Gothic', 'YuGothic', 'Meiryo', sans-serif;
 }
 
+/* テーマ(色プリセット)。指定がなければ既定の「和紙」のまま。 */
+:root[data-theme='sumi'] {
+  --paper: #eeebe4;
+  --card: #ffffff;
+  --ink: #201d1a;
+  --ink-soft: #5c564d;
+  --rule: #d9d3c7;
+  --ai: #37475c;
+  --shu: #a13a2e;
+  --take: #4a6b4f;
+  --yamabuki: #a67c2e;
+}
+
+:root[data-theme='indigo'] {
+  --paper: #e3e8f0;
+  --card: #ffffff;
+  --ink: #141f30;
+  --ink-soft: #3f5170;
+  --rule: #c7d1e0;
+  --ai: #2843a0;
+  --shu: #b03f2e;
+  --take: #2e6b57;
+  --yamabuki: #ad7c1f;
+}
+
+:root[data-theme='sakura'] {
+  --paper: #f5ecec;
+  --card: #fffbfb;
+  --ink: #33202b;
+  --ink-soft: #7a5c66;
+  --rule: #e6d3d6;
+  --ai: #5c6f9e;
+  --shu: #c0506a;
+  --take: #6b8f6f;
+  --yamabuki: #c99a4a;
+}
+
 * {
   box-sizing: border-box;
 }
