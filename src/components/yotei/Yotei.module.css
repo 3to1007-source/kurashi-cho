@@ -87,6 +87,10 @@
   background: var(--ai);
 }
 
+.dotPayment {
+  background: var(--yamabuki);
+}
+
 /* 今日のティーザー行(その日の帳をタップで開く導線) */
 .teaser {
   width: 100%;

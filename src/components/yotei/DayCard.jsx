@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { useApp } from '../../context/AppContext'
 import { yen } from '../../lib/format'
+import { paymentDatesForMonth } from '../../lib/allowance'
 import common from '../../styles/common.module.css'
 import styles from './Yotei.module.css'
 
@@ -12,6 +13,9 @@ export default function DayCard({ date }) {
   const dayYotei = data.yotei.filter((y) => y.date === date).sort((a, b) => (a.time < b.time ? -1 : 1))
   const dayKakei = data.kakei.filter((k) => k.date === date)
   const dayKarada = data.karada.filter((k) => k.date === date)
+
+  const [year, month] = date.split('-').map(Number)
+  const dayPayments = paymentDatesForMonth(data.settings.plannedExpenses, year, month)[date] || []
 
   function addYotei(e) {
     e.preventDefault()
@@ -83,6 +87,20 @@ export default function DayCard({ date }) {
           </div>
         ))}
       </div>
+
+      {dayPayments.length > 0 && (
+        <div className={styles.subSection}>
+          <div className={styles.subHead} style={{ color: 'var(--yamabuki)' }}>
+            支払い予定
+          </div>
+          {dayPayments.map((p, i) => (
+            <div className={styles.yoteiRow} key={i}>
+              <span className={styles.yoteiTitle}>{p.label}</span>
+              <span className="num">{yen(p.amount)}円</span>
+            </div>
+          ))}
+        </div>
+      )}
 
       <div className={styles.subSection}>
         <div className={styles.subHead} style={{ color: 'var(--take)' }}>

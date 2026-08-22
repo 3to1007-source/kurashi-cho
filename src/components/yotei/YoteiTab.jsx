@@ -1,6 +1,7 @@
 import { useMemo, useState } from 'react'
 import { useApp } from '../../context/AppContext'
 import { todayStr } from '../../lib/constants'
+import { paymentDatesForMonth } from '../../lib/allowance'
 import MonthCalendar from './MonthCalendar'
 import DayCard from './DayCard'
 import common from '../../styles/common.module.css'
@@ -12,6 +13,11 @@ export default function YoteiTab() {
   const [year, setYear] = useState(Number(today.slice(0, 4)))
   const [month, setMonth] = useState(Number(today.slice(5, 7)))
   const [openDate, setOpenDate] = useState(null)
+
+  const payments = useMemo(
+    () => paymentDatesForMonth(data.settings.plannedExpenses, year, month),
+    [data.settings.plannedExpenses, year, month]
+  )
 
   const marks = useMemo(() => {
     const m = {}
@@ -25,8 +31,11 @@ export default function YoteiTab() {
     data.yotei.forEach((r) => {
       if (r.date.startsWith(monthPrefix)) (m[r.date] ??= {}).yotei = true
     })
+    Object.keys(payments).forEach((dateStr) => {
+      ;(m[dateStr] ??= {}).payment = true
+    })
     return m
-  }, [data, year, month])
+  }, [data, year, month, payments])
 
   const todayMarks = marks[today] || {}
 
@@ -72,6 +81,7 @@ export default function YoteiTab() {
             {todayMarks.kakei && <span className={`${styles.teaserDot} ${styles.dotKakei}`} />}
             {todayMarks.karada && <span className={`${styles.teaserDot} ${styles.dotKarada}`} />}
             {todayMarks.yotei && <span className={`${styles.teaserDot} ${styles.dotYotei}`} />}
+            {todayMarks.payment && <span className={`${styles.teaserDot} ${styles.dotPayment}`} />}
           </span>
           <span className={styles.teaserArrow}>見る ›</span>
         </button>

@@ -2,6 +2,8 @@
 // ユーザーごとに開始日・締日・月額を持ち、その人自身が記録した支出
 // (締日までの未来日付も含む)を差し引いた残額を計算する。
 
+import { nextBusinessDay } from './holidays'
+
 function pad(n) {
   return String(n).padStart(2, '0')
 }
@@ -90,4 +92,22 @@ export function calcHouseholdBudget({ kakei, plannedExpenses, cycle, todayStr })
   const plannedTotal = plannedExpenses.reduce((sum, p) => sum + (p.amount || 0), 0)
 
   return { start, end, income, plannedTotal, remaining: income - plannedTotal }
+}
+
+// 先取り支出の支払い日を、指定した月(year, 1-12のmonth)について計算する。
+// 土日祝に当たる場合は翌営業日にずらす。日付ごとにその日が支払い日の項目一覧を返す。
+export function paymentDatesForMonth(plannedExpenses, year, month) {
+  const lastDay = new Date(year, month, 0).getDate()
+  const result = {}
+
+  ;(plannedExpenses || []).forEach((p) => {
+    if (!p.payDay) return
+    const day = Math.min(Math.max(p.payDay, 1), lastDay)
+    const raw = `${year}-${pad(month)}-${pad(day)}`
+    const actual = nextBusinessDay(raw)
+    if (!result[actual]) result[actual] = []
+    result[actual].push({ label: p.label, amount: p.amount })
+  })
+
+  return result
 }

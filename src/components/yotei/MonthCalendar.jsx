@@ -50,6 +50,7 @@ export default function MonthCalendar({ year, month, marks, selectedDate, todayD
                 {m.kakei && <span className={`${styles.dot} ${styles.dotKakei}`} />}
                 {m.karada && <span className={`${styles.dot} ${styles.dotKarada}`} />}
                 {m.yotei && <span className={`${styles.dot} ${styles.dotYotei}`} />}
+                {m.payment && <span className={`${styles.dot} ${styles.dotPayment}`} />}
               </span>
             </button>
           )
