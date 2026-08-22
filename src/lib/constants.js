@@ -27,6 +27,7 @@ export function emptyData() {
       nisaMonthly: 30000,
       nisaYears: 20,
       nisaReturn: 4,
+      allowances: {},
     },
   }
 }
