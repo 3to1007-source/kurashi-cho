@@ -29,6 +29,8 @@ export function emptyData() {
       nisaReturn: 4,
       allowances: {},
       categoryBudgets: {},
+      householdCycle: { startDay: 1, endDay: 31 },
+      plannedExpenses: [],
     },
   }
 }

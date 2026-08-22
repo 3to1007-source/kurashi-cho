@@ -73,3 +73,21 @@ export function calcCategoryBudget({ kakei, category, monthly, todayStr }) {
 
   return { month, spent, monthly, remaining: monthly - spent }
 }
+
+// 先取り支出(固定費): 家計全体の残金。開始日のタイミングで、その周期の
+// 収入からあらかじめ登録した支出リスト(家賃・光熱費など、金額は毎月編集できる)の
+// 合計をあらかじめ差し引き、「今月家計で使えるお金」を出す。
+export function calcHouseholdBudget({ kakei, plannedExpenses, cycle, todayStr }) {
+  if (!plannedExpenses || plannedExpenses.length === 0) return null
+  const startDay = cycle?.startDay || 1
+  const endDay = cycle?.endDay || 31
+  const { start, end } = cycleRange(startDay, endDay, todayStr)
+
+  const income = kakei
+    .filter((r) => r.type === 'in' && r.date >= start && r.date <= end)
+    .reduce((sum, r) => sum + r.amount, 0)
+
+  const plannedTotal = plannedExpenses.reduce((sum, p) => sum + (p.amount || 0), 0)
+
+  return { start, end, income, plannedTotal, remaining: income - plannedTotal }
+}
