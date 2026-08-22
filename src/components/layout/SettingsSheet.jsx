@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { useApp } from '../../context/AppContext'
 import { addUser, exportDataJSON, getBookId } from '../../lib/vault'
-import { todayStr } from '../../lib/constants'
+import { todayStr, KAKEI_OUT_CATEGORIES } from '../../lib/constants'
 import styles from './SettingsSheet.module.css'
 
 const SYNC_LABEL = {
@@ -111,6 +111,17 @@ export default function SettingsSheet({ onClose }) {
     }))
   }
 
+  function updateCategoryBudget(category, value) {
+    const amount = Number(value) || 0
+    save((prev) => ({
+      ...prev,
+      settings: {
+        ...prev.settings,
+        categoryBudgets: { ...prev.settings.categoryBudgets, [category]: amount },
+      },
+    }))
+  }
+
   return (
     <div className={styles.backdrop} onClick={onClose}>
       <div className={styles.sheet} onClick={(e) => e.stopPropagation()}>
@@ -172,6 +183,23 @@ export default function SettingsSheet({ onClose }) {
           <p className={styles.small}>
             毎月{allowance.startDay}日はじまり、{allowance.endDay}日{allowance.endDay < allowance.startDay ? '(翌月)' : ''}締め。
           </p>
+        </div>
+
+        <div className={styles.section}>
+          <div className={styles.sectionTitle}>カテゴリ予算(今月・全員分)</div>
+          <p className={styles.small}>分類ごとの月の予算です。家計に記録された支出を、記録した人にかかわらず合算して差し引きます。</p>
+          {KAKEI_OUT_CATEGORIES.map((c) => (
+            <div className={styles.row} key={c}>
+              <span style={{ flex: '0 0 92px', fontSize: 15, alignSelf: 'center' }}>{c}</span>
+              <input
+                type="number"
+                inputMode="numeric"
+                value={data.settings.categoryBudgets?.[c] || ''}
+                onChange={(e) => updateCategoryBudget(c, e.target.value)}
+                placeholder="未設定"
+              />
+            </div>
+          ))}
         </div>
 
         <div className={styles.section}>

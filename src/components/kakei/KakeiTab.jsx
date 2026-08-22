@@ -3,6 +3,7 @@ import { useApp } from '../../context/AppContext'
 import { monthKey, yen } from '../../lib/format'
 import { todayStr } from '../../lib/constants'
 import { calcAllowance } from '../../lib/allowance'
+import CategoryBudgets from './CategoryBudgets'
 import KakeiChart from './KakeiChart'
 import KakeiForm from './KakeiForm'
 import KakeiList from './KakeiList'
@@ -29,6 +30,8 @@ export default function KakeiTab() {
   }, [monthRecords])
 
   const outRecords = monthRecords.filter((r) => r.type === 'out')
+
+  const hasCategoryBudgets = Object.values(data.settings.categoryBudgets || {}).some((v) => v > 0)
 
   const allowanceInfo = useMemo(
     () =>
@@ -68,6 +71,15 @@ export default function KakeiTab() {
           )}
         </div>
       </section>
+
+      {hasCategoryBudgets && (
+        <section className={common.section}>
+          <div className={common.sectionTitle}>カテゴリ予算</div>
+          <div className={common.card}>
+            <CategoryBudgets kakei={data.kakei} categoryBudgets={data.settings.categoryBudgets} todayStr={today} />
+          </div>
+        </section>
+      )}
 
       <section className={common.section}>
         <div className={common.sectionTitle}>今月のサマリー</div>

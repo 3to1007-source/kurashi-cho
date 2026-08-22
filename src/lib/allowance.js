@@ -61,3 +61,15 @@ export function calcAllowance({ kakei, userId, allowance, todayStr }) {
 
   return { start, end, spent, monthly: allowance.monthly, remaining: allowance.monthly - spent }
 }
+
+// カテゴリ予算: 分類ごとの月の予算(誰が記録した支出でも合算する)。暦月(1日〜月末)固定。
+export function calcCategoryBudget({ kakei, category, monthly, todayStr }) {
+  if (!monthly) return null
+  const month = todayStr.slice(0, 7)
+
+  const spent = kakei
+    .filter((r) => r.type === 'out' && r.category === category && r.date.slice(0, 7) === month)
+    .reduce((sum, r) => sum + r.amount, 0)
+
+  return { month, spent, monthly, remaining: monthly - spent }
+}
