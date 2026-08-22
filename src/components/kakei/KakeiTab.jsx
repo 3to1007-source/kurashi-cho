@@ -58,6 +58,11 @@ export default function KakeiTab() {
   return (
     <div>
       <section className={common.section}>
+        <div className={common.sectionTitle}>記録する</div>
+        <KakeiForm />
+      </section>
+
+      <section className={common.section}>
         <div className={common.sectionTitle}>今月家計で使えるお金</div>
         <div className={common.card}>
           {householdInfo ? (
@@ -148,11 +153,6 @@ export default function KakeiTab() {
           </div>
         </section>
       )}
-
-      <section className={common.section}>
-        <div className={common.sectionTitle}>記録する</div>
-        <KakeiForm />
-      </section>
 
       <section className={common.section}>
         <div className={common.sectionTitle}>今月の記録</div>
