@@ -11,6 +11,7 @@ export default function PlannedExpensesSettings({ onBack, onClose }) {
   const { data, save } = useApp()
   const [incomeLabel, setIncomeLabel] = useState('')
   const [incomeAmount, setIncomeAmount] = useState('')
+  const [incomePayDay, setIncomePayDay] = useState('')
   const [expenseLabel, setExpenseLabel] = useState('')
   const [expenseAmount, setExpenseAmount] = useState('')
   const [expensePayDay, setExpensePayDay] = useState('')
@@ -70,9 +71,10 @@ export default function PlannedExpensesSettings({ onBack, onClose }) {
     const text = incomeLabel.trim()
     const amt = Number(incomeAmount) || 0
     if (!text || !amt) return
-    addPlannedItem('plannedIncome', { label: text, amount: amt })
+    addPlannedItem('plannedIncome', { label: text, amount: amt, payDay: incomePayDay ? clampDay(incomePayDay) : null })
     setIncomeLabel('')
     setIncomeAmount('')
+    setIncomePayDay('')
   }
 
   function addExpense(e) {
@@ -132,6 +134,7 @@ export default function PlannedExpensesSettings({ onBack, onClose }) {
 
         <div className={styles.section}>
           <div className={styles.sectionTitle}>予定収入(給料など)</div>
+          <p className={styles.small}>給料日を登録すると予定タブのカレンダーに表示されます(土日祝の場合は自動で前営業日になります)。</p>
           <form className={styles.section} onSubmit={addIncome}>
             <div className={styles.row}>
               <input value={incomeLabel} onChange={(e) => setIncomeLabel(e.target.value)} placeholder="項目名(例: 給料)" />
@@ -144,24 +147,47 @@ export default function PlannedExpensesSettings({ onBack, onClose }) {
                 onChange={(e) => setIncomeAmount(e.target.value)}
                 placeholder="金額"
               />
-              <button className={styles.btnPrimary} type="submit">
-                追加
-              </button>
-            </div>
-          </form>
-          {plannedIncome.length === 0 && <p className={styles.small}>まだ登録されていません。</p>}
-          {plannedIncome.map((p) => (
-            <div className={styles.row} key={p.id}>
-              <span style={{ flex: '0 0 92px', fontSize: 15, alignSelf: 'center' }}>{p.label}</span>
               <input
                 type="number"
                 inputMode="numeric"
-                value={p.amount}
-                onChange={(e) => updatePlannedItemField('plannedIncome', p.id, 'amount', e.target.value)}
+                min="1"
+                max="31"
+                value={incomePayDay}
+                onChange={(e) => setIncomePayDay(e.target.value)}
+                placeholder="給料日(任意)"
               />
-              <button className={styles.kaizenDel} onClick={() => deletePlannedItem('plannedIncome', p.id)}>
-                削除
-              </button>
+            </div>
+            <button className={styles.btnPrimary} type="submit">
+              追加
+            </button>
+          </form>
+          {plannedIncome.length === 0 && <p className={styles.small}>まだ登録されていません。</p>}
+          {plannedIncome.map((p) => (
+            <div key={p.id} style={{ border: '1px solid var(--rule)', borderRadius: 'var(--radius)', padding: 12, display: 'flex', flexDirection: 'column', gap: 8 }}>
+              <div className={styles.row} style={{ justifyContent: 'space-between', alignItems: 'center' }}>
+                <span style={{ fontSize: 15, fontWeight: 600 }}>{p.label}</span>
+                <button className={styles.kaizenDel} onClick={() => deletePlannedItem('plannedIncome', p.id)}>
+                  削除
+                </button>
+              </div>
+              <div className={styles.row}>
+                <input
+                  type="number"
+                  inputMode="numeric"
+                  value={p.amount}
+                  onChange={(e) => updatePlannedItemField('plannedIncome', p.id, 'amount', e.target.value)}
+                  placeholder="金額"
+                />
+                <input
+                  type="number"
+                  inputMode="numeric"
+                  min="1"
+                  max="31"
+                  value={p.payDay || ''}
+                  onChange={(e) => updatePlannedItemField('plannedIncome', p.id, 'payDay', e.target.value)}
+                  placeholder="給料日(任意)"
+                />
+              </div>
             </div>
           ))}
           {plannedIncome.length > 0 && <p className={styles.small}>合計: {yen(incomeTotal)}円</p>}

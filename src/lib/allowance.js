@@ -2,7 +2,7 @@
 // ユーザーごとに開始日・締日・月額を持ち、その人自身が記録した支出
 // (締日までの未来日付も含む)を差し引いた残額を計算する。
 
-import { nextBusinessDay } from './holidays'
+import { nextBusinessDay, prevBusinessDay } from './holidays'
 
 function pad(n) {
   return String(n).padStart(2, '0')
@@ -95,20 +95,30 @@ export function calcHouseholdBudget({ plannedIncome, plannedExpenses, cycle, tod
   return { start, end, income, plannedTotal, remaining: income - plannedTotal }
 }
 
-// 先取り支出の支払い日を、指定した月(year, 1-12のmonth)について計算する。
-// 土日祝に当たる場合は翌営業日にずらす。日付ごとにその日が支払い日の項目一覧を返す。
-export function paymentDatesForMonth(plannedExpenses, year, month) {
+function scheduledDatesForMonth(items, year, month, shiftFn, type) {
   const lastDay = new Date(year, month, 0).getDate()
   const result = {}
 
-  ;(plannedExpenses || []).forEach((p) => {
+  ;(items || []).forEach((p) => {
     if (!p.payDay) return
     const day = Math.min(Math.max(p.payDay, 1), lastDay)
     const raw = `${year}-${pad(month)}-${pad(day)}`
-    const actual = nextBusinessDay(raw)
+    const actual = shiftFn(raw)
     if (!result[actual]) result[actual] = []
-    result[actual].push({ label: p.label, amount: p.amount })
+    result[actual].push({ label: p.label, amount: p.amount, type })
   })
 
   return result
+}
+
+// 先取り支出の支払い日を、指定した月(year, 1-12のmonth)について計算する。
+// 土日祝に当たる場合は翌営業日にずらす。日付ごとにその日が支払い日の項目一覧を返す。
+export function paymentDatesForMonth(plannedExpenses, year, month) {
+  return scheduledDatesForMonth(plannedExpenses, year, month, nextBusinessDay, 'out')
+}
+
+// 予定収入(給料など)の受取日を、指定した月について計算する。
+// 土日祝に当たる場合は前営業日にずらす(給料日の一般的な扱いに合わせる)。
+export function incomeDatesForMonth(plannedIncome, year, month) {
+  return scheduledDatesForMonth(plannedIncome, year, month, prevBusinessDay, 'in')
 }

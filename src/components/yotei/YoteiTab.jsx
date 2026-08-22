@@ -1,7 +1,7 @@
 import { useMemo, useState } from 'react'
 import { useApp } from '../../context/AppContext'
 import { todayStr } from '../../lib/constants'
-import { paymentDatesForMonth } from '../../lib/allowance'
+import { paymentDatesForMonth, incomeDatesForMonth } from '../../lib/allowance'
 import MonthCalendar from './MonthCalendar'
 import DayCard from './DayCard'
 import common from '../../styles/common.module.css'
@@ -14,10 +14,15 @@ export default function YoteiTab() {
   const [month, setMonth] = useState(Number(today.slice(5, 7)))
   const [openDate, setOpenDate] = useState(null)
 
-  const payments = useMemo(
-    () => paymentDatesForMonth(data.settings.plannedExpenses, year, month),
-    [data.settings.plannedExpenses, year, month]
-  )
+  const payments = useMemo(() => {
+    const expenses = paymentDatesForMonth(data.settings.plannedExpenses, year, month)
+    const income = incomeDatesForMonth(data.settings.plannedIncome, year, month)
+    const merged = { ...expenses }
+    Object.entries(income).forEach(([d, items]) => {
+      merged[d] = [...(merged[d] || []), ...items]
+    })
+    return merged
+  }, [data.settings.plannedExpenses, data.settings.plannedIncome, year, month])
 
   const marks = useMemo(() => {
     const m = {}

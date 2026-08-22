@@ -111,3 +111,14 @@ export function nextBusinessDay(dateStr) {
   }
   return s
 }
+
+// 給料日など、休日なら前倒しで支払われる日付向け
+export function prevBusinessDay(dateStr) {
+  let d = new Date(`${dateStr}T00:00:00`)
+  let s = dateStr
+  while (!isBusinessDay(s)) {
+    d.setDate(d.getDate() - 1)
+    s = toStr(d.getFullYear(), d.getMonth() + 1, d.getDate())
+  }
+  return s
+}
